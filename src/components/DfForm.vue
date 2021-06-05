@@ -86,36 +86,36 @@ export default defineComponent({
     [Button.name]: Button,
     [Form.name]: Form,
     [Field.name]: Field,
-    [CellGroup.name]: CellGroup,
+    [CellGroup.name]: CellGroup
   },
 
-  setup() {
+  setup () {
     const { params } = useRoute()
     const router = useRouter()
     const state = reactive<IFormProps>({
       idea: {
         title: '',
-        content: '',
+        content: ''
       },
       project: {
         title: '',
         content: ''
       }
-    });
+    })
 
-    const showProject = params.type === 'project' ? true : false
+    const showProject = params.type === 'project'
 
     // TODO 发送请求
     const onSubmit = (value: IFormProps) => {
       console.log(108, value)
       router.go(-1)
-    };
+    }
 
     return {
       state,
       showProject,
-      onSubmit,
-    };
-  },
+      onSubmit
+    }
+  }
 })
 </script>
