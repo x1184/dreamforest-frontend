@@ -28,6 +28,14 @@ export default [
     }]
   },
   {
+    path: '/login',
+    component: () => import('../pages/global/login.vue')
+  },
+  {
+    path: '/register',
+    component: () => import('../pages/global/register.vue')
+  },
+  {
     path: '/form/:type',
     component: Form
   },
