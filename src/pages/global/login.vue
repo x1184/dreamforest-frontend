@@ -23,7 +23,7 @@
         <van-button round native-type="submit">
           登陆
         </van-button>
-        <van-button round>
+        <van-button @click="handlePassword" round>
           <van-icon size="20px" name="question-o" />
         </van-button>
       </div>
@@ -38,19 +38,39 @@
       <van-icon name="fire" />
       <van-icon name="cart" />
     </div>
+
+    <van-popup
+      round
+      position="bottom"
+      class="forget-password-popup"
+      v-model:show="showPopUp">
+      <div>
+        <div>
+          找回密码
+        </div>
+        <div>
+          <div></div>
+          <div>
+            <van-button>发送验证码</van-button>
+          </div>
+          <div></div>
+        </div>
+      </div>
+    </van-popup>
   </van-form>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
-import { Form, Field, Button, Icon } from 'vant'
+import { defineComponent, reactive, ref } from 'vue'
+import { Form, Field, Button, Icon, Popup } from 'vant'
 
 export default defineComponent({
   components: {
     [Form.name]: Form,
     [Field.name]: Field,
     [Button.name]: Button,
-    [Icon.name]: Icon
+    [Icon.name]: Icon,
+    [Popup.name]: Popup
   },
 
   setup () {
@@ -58,14 +78,22 @@ export default defineComponent({
       username: '',
       password: ''
     })
+    const showPopUp = ref(false)
 
+    const handlePassword = () => {
+      console.log(showPopUp)
+      showPopUp.value = true
+    }
     const handleLogin = () => {
       console.log(personal)
     }
 
     return {
       personal,
-      handleLogin
+      showPopUp,
+
+      handleLogin,
+      handlePassword
     }
   }
 })
@@ -116,5 +144,9 @@ export default defineComponent({
 
 .login-button button:first-child .van-button__text {
   margin-left: 60px;
+}
+
+.forget-password-popup {
+  height: 30%;
 }
 </style>
