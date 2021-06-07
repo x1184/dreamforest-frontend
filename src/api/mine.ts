@@ -3,11 +3,10 @@ import request from '../utils/request'
 const MODULE_NAME = 'mine'
 
 // 查询个人资料
-export async function getUserByUserId (params: string[]) {
+export async function getUserByUserId () {
   return request({
     method: 'post',
-    url: `/${MODULE_NAME}/getUserByUserId`,
-    data: params
+    url: `/${MODULE_NAME}/getUserByUserId`
   })
 }
 

@@ -1,4 +1,5 @@
 import axios from 'axios'
+
 const service = axios.create({
   baseURL: '',
   timeout: 5000 // request timeout
@@ -6,7 +7,7 @@ const service = axios.create({
 
 // 响应拦截器
 service.interceptors.response.use(
-  response => {
+  (response: any) => {
     const res = response.data
 
     if (response.status !== 200) {
@@ -15,7 +16,7 @@ service.interceptors.response.use(
       return res.data
     }
   },
-  error => {
+  (error: Error) => {
     return Promise.reject(error)
   }
 )

@@ -1,18 +1,23 @@
 import request from '../utils/request'
+import {
+  ICommentProps,
+  IIdeaProps,
+  ITagProps,
+  IProjectProps
+} from '../interface'
 
 const MODULE_NAME = 'explore'
 
 // 所有的标签
-export async function getAllTagsByUserId (params: string[]) {
+export async function getAllTagsByUserId () {
   return request({
     method: 'post',
-    url: `/${MODULE_NAME}/getAllTagsByUserId`,
-    data: params
+    url: `/${MODULE_NAME}/getAllTagsByUserId`
   })
 }
 
 // 个人的标签偏好设置
-export async function updateUserPreferTags (params: string[]) {
+export async function updateUserPreferTags (params: ITagProps[]) {
   return request({
     method: 'post',
     url: `/${MODULE_NAME}/updateUserPreferTags`,
@@ -30,7 +35,7 @@ export async function getAllIdeaByTags (params: string[]) {
 }
 
 // 通过 ideaId 查询 idea 详情
-export async function getDetailsByIdeaId (params: string[]) {
+export async function getDetailsByIdeaId (params: string) {
   return request({
     method: 'post',
     url: `/${MODULE_NAME}/getDetailsByIdeaId`,
@@ -39,7 +44,7 @@ export async function getDetailsByIdeaId (params: string[]) {
 }
 
 // 发送评论
-export async function addCommentByIdeaId (params: string[]) {
+export async function addCommentByIdeaId (params: ICommentProps) {
   return request({
     method: 'post',
     url: `/${MODULE_NAME}/addCommentByIdeaId`,
@@ -48,7 +53,7 @@ export async function addCommentByIdeaId (params: string[]) {
 }
 
 // 添加想法
-export async function addIdeaByUserId (params: string[]) {
+export async function addIdeaByUserId (params: IIdeaProps) {
   return request({
     method: 'post',
     url: `/${MODULE_NAME}/addIdeaByUserId`,
@@ -57,7 +62,7 @@ export async function addIdeaByUserId (params: string[]) {
 }
 
 // 添加项目
-export async function addProjectByUserId (params: string[]) {
+export async function addProjectByUserId (params: IProjectProps) {
   return request({
     method: 'post',
     url: `/${MODULE_NAME}/addProjectByUserId`,
@@ -65,8 +70,8 @@ export async function addProjectByUserId (params: string[]) {
   })
 }
 
-// 查询所有标签
-export async function getCommentsByIdeaId (params: string[]) {
+// 通过 ideaId 查询评论
+export async function getCommentsByIdeaId (params: string) {
   return request({
     method: 'post',
     url: `/${MODULE_NAME}/getCommentsByIdeaId`,
@@ -75,7 +80,7 @@ export async function getCommentsByIdeaId (params: string[]) {
 }
 
 // 点赞和关注
-export async function updateLikeOrFavoriteByIdeaId (params: string[]) {
+export async function updateLikeOrFavoriteByIdeaId (params: any) {
   return request({
     method: 'post',
     url: `/${MODULE_NAME}/updateLikeOrFavoriteByIdeaId`,
