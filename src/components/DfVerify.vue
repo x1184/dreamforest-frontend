@@ -10,7 +10,7 @@
       {{ content }}
     </span>
 
-    <span @click="handleChangeChecked" class="verify-icon">
+    <span class="verify-icon">
       <van-icon v-show="showChecked" :name="checked ? 'checked' : 'passed'" />
     </span>
   </div>
@@ -18,15 +18,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Image, Icon } from 'vant'
 
 export default defineComponent({
   name: 'df-verify',
-
-  components: {
-    [Image.name]: Image,
-    [Icon.name]: Icon
-  },
 
   props: {
     checked: {

@@ -1,12 +1,13 @@
 <template>
   <van-form class="register-container" @submit="handleRegister">
     <div class="register-name">南枝</div>
-    <div>
+
+    <div class="register-field">
       <van-field
         v-model="personal.name"
         name="name"
         label="昵称"
-        placeholder="请输入手机号或邮箱"
+        placeholder="请输入昵称"
         :rules="[{ required: true, message: '请输入昵称' }]"
       />
       <van-field
@@ -33,9 +34,12 @@
         :rules="[{ required: true, message: '请输入密码' }]"
       />
     </div>
+
     <div class="register-button-group">
       <van-button type="primary" round native-type="submit">
-        提交
+        <div class="register-button__submit">
+          提交
+        </div>
       </van-button>
     </div>
   </van-form>
@@ -43,16 +47,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
-import { Form, Field, Button, Icon } from 'vant'
 
 export default defineComponent({
-  components: {
-    [Form.name]: Form,
-    [Field.name]: Field,
-    [Button.name]: Button,
-    [Icon.name]: Icon
-  },
-
   setup () {
     const personal = reactive<any>({
       name: '',
@@ -83,6 +79,10 @@ export default defineComponent({
   margin-top: 40px;
 }
 
+.register-field {
+  margin: 0 10px;
+}
+
 .register-name {
   display: flex;
   justify-content: center;
@@ -96,5 +96,9 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.register-button__submit {
+  padding: 0 10px;
 }
 </style>

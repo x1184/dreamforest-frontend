@@ -26,7 +26,6 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
-import { CellGroup, Cell } from 'vant'
 import DfCard from '../components/DfCard.vue'
 import DfHeader from '../layouts/DfHeader.vue'
 
@@ -34,8 +33,6 @@ export default defineComponent({
   name: 'df-personal',
 
   components: {
-    [CellGroup.name]: CellGroup,
-    [Cell.name]: Cell,
     [DfCard.name]: DfCard,
     [DfHeader.name]: DfHeader
   },

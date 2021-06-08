@@ -62,7 +62,7 @@
       round
       position="bottom"
       class="forget-password-popup"
-      v-model:show="showPopUp"
+      v-model:show="showDrawer.forgetPassword"
     >
       <div class="login-popup-container">
         <div class="login-popup-title">
@@ -71,7 +71,6 @@
 
         <van-form
           validate-trigger="onChange"
-          :ref="el => { forgetFormRef = el }"
         >
           <van-field
             type="tel"
@@ -97,38 +96,64 @@
               :mask="false"
               :gutter="10"
               :value="verifyValue"
-              :focused="showKeyboard"
+              :focused="showDrawer.keyboard"
               @focus="handleShowKeyboard"
             />
             <van-number-keyboard
               maxlength="6"
               v-model="verifyValue"
-              :show="showKeyboard"
+              :show="showDrawer.keyboard"
               @blur="handleHiddenKeyboard"
             />
           </div>
         </van-form>
       </div>
+    </van-popup>
 
+    <van-popup
+      round
+      position="bottom"
+      class="forget-password-popup"
+      v-model:show="showDrawer.newPassword"
+    >
+      <div class="login-popup-container">
+        <div class="login-popup-title">
+          输入新密码
+        </div>
+
+        <van-form>
+          <van-field
+            type="password"
+            name="password"
+            label="密码"
+            placeholder="请输入您的新密码"
+            v-model="password.newPassword"
+          />
+
+          <van-field
+            type="password"
+            name="password"
+            label="密码"
+            placeholder="请重新输入"
+            v-model="password.confirmPassword"
+          />
+
+          <van-button type="primary">
+            确认修改
+          </van-button>
+        </van-form>
+      </div>
     </van-popup>
   </van-form>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
-import { Form, Field, Button, Icon, Popup, Toast, PasswordInput, NumberKeyboard } from 'vant'
+import {
+  Toast
+} from 'vant'
 
 export default defineComponent({
-  components: {
-    [Form.name]: Form,
-    [Field.name]: Field,
-    [Button.name]: Button,
-    [Icon.name]: Icon,
-    [Popup.name]: Popup,
-    [PasswordInput.name]: PasswordInput,
-    [NumberKeyboard.name]: NumberKeyboard
-  },
-
   setup () {
     const personal = reactive<any>({
       username: '',
@@ -138,9 +163,15 @@ export default defineComponent({
       disabled: true,
       count: 60
     })
-    const showPopUp = ref(false)
-    const showKeyboard = ref(false)
-    const forgetFormRef = ref(null)
+    const showDrawer = reactive({
+      forgetPassword: false,
+      keyboard: false,
+      newPassword: false
+    })
+    const password = reactive({
+      newPassword: '',
+      confirmPassword: ''
+    })
     const telphone = ref('')
     const verifyValue = ref('')
     const height = ref('40%')
@@ -158,17 +189,20 @@ export default defineComponent({
         })
       }
     }
+    // 忘记密码弹窗
     const handleForgetPassword = () => {
-      showPopUp.value = true
+      showDrawer.forgetPassword = true
     }
+    // TODO 处理登陆逻辑
     const handleLogin = () => {
       console.log(personal)
     }
+    // 显示键盘
     const handleShowKeyboard = async () => {
       const phone = /^1[3-9]\d{9}$/.test(telphone.value)
 
       if (phone) {
-        showKeyboard.value = true
+        showDrawer.keyboard = true
         height.value = '80%'
       } else {
         Toast({
@@ -177,12 +211,14 @@ export default defineComponent({
         })
       }
     }
+    // 隐藏 keyboard
     const handleHiddenKeyboard = () => {
-      showKeyboard.value = false
+      showDrawer.keyboard = false
       setTimeout(() => {
         height.value = '45%'
       }, 300)
     }
+    // 创建一个定时器
     const handleCreateCount = () => {
       timing.disabled = true
       const interval = setInterval(() => {
@@ -196,6 +232,11 @@ export default defineComponent({
         }
       }, 1000)
     }
+    // 新密码的弹窗
+    const handleShowNewPassword = () => {
+      showDrawer.forgetPassword = false
+      showDrawer.newPassword = true
+    }
 
     return {
       timing,
@@ -203,16 +244,16 @@ export default defineComponent({
       personal,
       verifyValue,
       telphone,
-      showPopUp,
-      showKeyboard,
-      forgetFormRef,
+      password,
+      showDrawer,
 
       handleLogin,
       handleBlurPhone,
       handleForgetPassword,
       handleCreateCount,
       handleShowKeyboard,
-      handleHiddenKeyboard
+      handleHiddenKeyboard,
+      handleShowNewPassword
     }
   }
 })

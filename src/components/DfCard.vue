@@ -26,18 +26,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Card, Col, Row, Image as VanImage } from 'vant'
 import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'df-card',
-
-  components: {
-    [Card.name]: Card,
-    [Row.name]: Row,
-    [Col.name]: Col,
-    [VanImage.name]: VanImage
-  },
 
   props: {
     id: {

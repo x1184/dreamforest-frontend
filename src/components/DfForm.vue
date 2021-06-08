@@ -65,7 +65,6 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
-import { Button, Form, Field, CellGroup } from 'vant'
 import { useRoute, useRouter } from 'vue-router'
 
 interface IFormProps {
@@ -81,13 +80,6 @@ interface IFormProps {
 
 export default defineComponent({
   name: 'df-form',
-
-  components: {
-    [Button.name]: Button,
-    [Form.name]: Form,
-    [Field.name]: Field,
-    [CellGroup.name]: CellGroup
-  },
 
   setup () {
     const { params } = useRoute()
