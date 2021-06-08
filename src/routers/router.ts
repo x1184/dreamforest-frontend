@@ -42,5 +42,13 @@ export default [
   {
     path: '/detail/:id',
     component: () => import('../pages/details.vue')
+  },
+  {
+    path: '/verify',
+    component: () => import('../pages/global/verify.vue')
+  },
+  {
+    path: '/verify-all',
+    component: () => import('../pages/global/verifyAll.vue')
   }
 ]
