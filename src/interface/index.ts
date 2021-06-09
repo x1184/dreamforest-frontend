@@ -1,6 +1,6 @@
 export interface ITagProps {
   id?: string;
-  label: string;
+  title: string;
   show?: boolean;
   select?: boolean;
   sort?: number;
@@ -14,12 +14,16 @@ export interface IPersonalProps {
   email?: string;
   password?: string;
   homePage?: string;
+  description?: string;
+  showId?: string;
+  createTime?: string;
 }
 
 export interface ICommentProps {
   id?: string;
-  comment: string;
-  dateTime?: string;
+  title: string;
+  createTime?: string;
+  personal?: IPersonalProps;
 }
 
 export interface IAboutProps {
@@ -29,12 +33,27 @@ export interface IAboutProps {
 
 export interface IIdeaProps {
   id?: string;
+  createTime?: string;
   title: string;
-  description: string;
-  like?: boolean;
-  favorites?: boolean;
+  content: string;
+  isLike?: boolean;
+  isStar?: boolean;
+  link?: string;
+  times?: {
+    view?: number;
+    like?: number;
+    star?: number;
+    comment?: number;
+  };
+  private?: {
+    type?: string,
+    time?: string,
+  },
+  plan?: {
+    startTime: string,
+    endTime: string,
+  },
   tags?: ITagProps[];
-  comments?: ICommentProps[]
 }
 
 export interface IProjectProps {

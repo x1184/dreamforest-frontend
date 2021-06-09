@@ -7,19 +7,17 @@
 
     <div class="login-form">
       <van-field
-        v-model="personal.username"
+        v-model.trim="form.username"
         name="username"
         label="手机 / 邮箱"
         placeholder="请输入手机号或邮箱"
-        :rules="[{ required: true, message: '请填写用户名' }]"
       />
       <van-field
-        v-model="personal.password"
+        v-model.trim="form.password"
         type="password"
         name="password"
         label="密码"
         placeholder="包含大小写字母和数字"
-        :rules="[{ required: true, message: '请填写密码' }]"
       />
     </div>
 
@@ -63,6 +61,7 @@
       position="bottom"
       class="forget-password-popup"
       v-model:show="showDrawer.forgetPassword"
+      @closed="handleCloseForgetPassword"
     >
       <div class="login-popup-container">
         <div class="login-popup-title">
@@ -77,7 +76,7 @@
             name="phone"
             label="手机号"
             placeholder="请输入待找回账号绑定手机"
-            v-model="telphone"
+            v-model="form.phone"
             @change="handleBlurPhone"
           />
 
@@ -95,13 +94,13 @@
               length="6"
               :mask="false"
               :gutter="10"
-              :value="verifyValue"
+              :value="form.verifyValue"
               :focused="showDrawer.keyboard"
               @focus="handleShowKeyboard"
             />
             <van-number-keyboard
               maxlength="6"
-              v-model="verifyValue"
+              v-model="form.verifyValue"
               :show="showDrawer.keyboard"
               @blur="handleHiddenKeyboard"
             />
@@ -115,6 +114,7 @@
       position="bottom"
       class="forget-password-popup"
       v-model:show="showDrawer.newPassword"
+      @closed="handleCloseConfirmPassword"
     >
       <div class="login-popup-container">
         <div class="login-popup-title">
@@ -127,7 +127,7 @@
             name="password"
             label="密码"
             placeholder="请输入您的新密码"
-            v-model="password.newPassword"
+            v-model="form.newPassword"
           />
 
           <van-field
@@ -135,7 +135,7 @@
             name="password"
             label="密码"
             placeholder="请重新输入"
-            v-model="password.confirmPassword"
+            v-model="form.confirmPassword"
           />
 
           <van-button type="primary">
@@ -155,9 +155,13 @@ import {
 
 export default defineComponent({
   setup () {
-    const personal = reactive<any>({
+    const form = reactive<any>({
       username: '',
-      password: ''
+      password: '',
+      newPassword: '',
+      confirmPassword: '',
+      phone: '',
+      verifyValue: ''
     })
     const timing = reactive({
       disabled: true,
@@ -168,17 +172,11 @@ export default defineComponent({
       keyboard: false,
       newPassword: false
     })
-    const password = reactive({
-      newPassword: '',
-      confirmPassword: ''
-    })
-    const telphone = ref('')
-    const verifyValue = ref('')
     const height = ref('40%')
 
     // 手机号取消聚焦
     const handleBlurPhone = () => {
-      const phone = /^1[3-9]\d{9}$/.test(telphone.value)
+      const phone = /^1[3-9]\d{9}$/.test(form.phone)
 
       if (phone) {
         timing.disabled = false
@@ -189,17 +187,65 @@ export default defineComponent({
         })
       }
     }
-    // 忘记密码弹窗
+
+    // Function
+    // =========================
+    // TODO 处理登陆逻辑
+    const handleLogin = () => {
+      console.log(form)
+
+      if (!form.username) {
+        Toast({
+          message: '请输入用户名',
+          position: 'bottom'
+        })
+
+        return null
+      }
+
+      if (!form.password) {
+        Toast({
+          message: '请输入密码',
+          position: 'bottom'
+        })
+
+        return null
+      }
+    }
+    // 打开 忘记密码弹窗
     const handleForgetPassword = () => {
       showDrawer.forgetPassword = true
     }
-    // TODO 处理登陆逻辑
-    const handleLogin = () => {
-      console.log(personal)
+    /**
+     * 关闭 忘记密码的弹窗
+     * 1. 将忘记密码里面的表单置空
+     * 2. 将密码置空
+     */
+    const handleCloseForgetPassword = () => {
+      form.phone = ''
+      form.verifyValue = ''
+      form.password = ''
     }
-    // 显示键盘
+    // 打开 新密码的弹窗
+    const handleShowNewPassword = () => {
+      showDrawer.forgetPassword = false
+      showDrawer.newPassword = true
+    }
+    /**
+     * 关闭 新密码的弹窗
+     * 1. 将新密码弹窗里面的表单置空
+     */
+    const handleCloseConfirmPassword = () => {
+      form.newPassword = ''
+      form.confirmPassword = ''
+    }
+
+    /**
+     * 显示键盘
+     * 1. 验证手机号，不然无法打开
+     */
     const handleShowKeyboard = async () => {
-      const phone = /^1[3-9]\d{9}$/.test(telphone.value)
+      const phone = /^1[3-9]\d{9}$/.test(form.phone)
 
       if (phone) {
         showDrawer.keyboard = true
@@ -211,13 +257,17 @@ export default defineComponent({
         })
       }
     }
-    // 隐藏 keyboard
+    /**
+     * 隐藏键盘
+     * 1. 延迟 0.3s 让键盘关闭
+     */
     const handleHiddenKeyboard = () => {
       showDrawer.keyboard = false
       setTimeout(() => {
         height.value = '45%'
       }, 300)
     }
+
     // 创建一个定时器
     const handleCreateCount = () => {
       timing.disabled = true
@@ -232,19 +282,11 @@ export default defineComponent({
         }
       }, 1000)
     }
-    // 新密码的弹窗
-    const handleShowNewPassword = () => {
-      showDrawer.forgetPassword = false
-      showDrawer.newPassword = true
-    }
 
     return {
+      form,
       timing,
       height,
-      personal,
-      verifyValue,
-      telphone,
-      password,
       showDrawer,
 
       handleLogin,
@@ -253,7 +295,9 @@ export default defineComponent({
       handleCreateCount,
       handleShowKeyboard,
       handleHiddenKeyboard,
-      handleShowNewPassword
+      handleShowNewPassword,
+      handleCloseForgetPassword,
+      handleCloseConfirmPassword
     }
   }
 })

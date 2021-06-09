@@ -5,18 +5,24 @@
         <van-icon
           name="cross"
           color="#969799"
+          @click="handleClosePage"
         />
-        <van-button color="#07C160">开始使用</van-button>
+        <van-button
+          @click="handleClosePage"
+          color="#07C160"
+        >开始使用</van-button>
       </div>
     </van-sticky>
 
     <div class="verify-title">完成验证</div>
 
     <div>
-      <div>
+      <div @click="handleClickVerifyPhone">
         <df-verify />
       </div>
-      <df-verify content="验证邮箱" />
+      <div @click="handleClickVerifyPhone">
+        <df-verify content="验证邮箱" />
+      </div>
     </div>
 
     <van-popup
@@ -24,18 +30,19 @@
       position="bottom"
       class="forget-password-popup"
       v-model:show="showDrawer.popUp"
+      @closed="handleCloseVerifyPhone"
     >
-      <div class="login-popup-container">
-        <div class="login-popup-title">
-        </div>
+      <div class="login-popup-title">
+      </div>
 
+      <div class="login-popup-container">
         <van-form validate-trigger="onChange">
           <van-field
             type="tel"
             name="phone"
             label="手机号"
             placeholder="请输入手机号"
-            v-model="telphone"
+            v-model="form.phone"
             @change="handleBlurPhone"
           />
 
@@ -53,13 +60,13 @@
               length="6"
               :mask="false"
               :gutter="10"
-              :value="verifyValue"
+              :value="form.verifyValue"
               :focused="showDrawer.keyboard"
               @focus="handleShowKeyboard"
             />
             <van-number-keyboard
               maxlength="6"
-              v-model="verifyValue"
+              v-model="form.verifyValue"
               :show="showDrawer.keyboard"
               @blur="handleHiddenKeyboard"
             />
@@ -73,6 +80,8 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
 import { Toast } from 'vant'
+import { useRouter } from 'vue-router'
+
 import DfVerify from '../../components/DfVerify.vue'
 
 export default defineComponent({
@@ -81,9 +90,11 @@ export default defineComponent({
   },
 
   setup () {
-    const personal = reactive<any>({
-      username: '',
-      password: ''
+    const router = useRouter()
+    const height = ref('40%')
+    const form = reactive({
+      phone: '',
+      verifyValue: ''
     })
     const timing = reactive({
       disabled: true,
@@ -93,13 +104,10 @@ export default defineComponent({
       popUp: false,
       keyboard: false
     })
-    const telphone = ref('')
-    const verifyValue = ref('')
-    const height = ref('40%')
 
     // 手机号取消聚焦
     const handleBlurPhone = () => {
-      const phone = /^1[3-9]\d{9}$/.test(telphone.value)
+      const phone = /^1[3-9]\d{9}$/.test(form.phone)
 
       if (phone) {
         timing.disabled = false
@@ -110,13 +118,20 @@ export default defineComponent({
         })
       }
     }
-    // 验证弹窗
+    // 打开验证弹窗
     const handleClickVerifyPhone = () => {
       showDrawer.popUp = true
     }
+    /**
+     * 关闭验证弹窗
+     * 1. 删除验证码显示
+     */
+    const handleCloseVerifyPhone = () => {
+      form.verifyValue = ''
+    }
     // 显示键盘
     const handleShowKeyboard = async () => {
-      const phone = /^1[3-9]\d{9}$/.test(telphone.value)
+      const phone = /^1[3-9]\d{9}$/.test(form.phone)
 
       if (phone) {
         showDrawer.keyboard = true
@@ -128,7 +143,7 @@ export default defineComponent({
         })
       }
     }
-    // 隐藏 keyboard
+    // 隐藏键盘
     const handleHiddenKeyboard = () => {
       showDrawer.keyboard = false
       setTimeout(() => {
@@ -149,20 +164,24 @@ export default defineComponent({
         }
       }, 1000)
     }
+    // 关闭此页面
+    const handleClosePage = () => {
+      router.replace('/')
+    }
 
     return {
+      form,
       timing,
       height,
-      personal,
-      verifyValue,
-      telphone,
       showDrawer,
 
       handleBlurPhone,
       handleClickVerifyPhone,
       handleCreateCount,
       handleShowKeyboard,
-      handleHiddenKeyboard
+      handleHiddenKeyboard,
+      handleCloseVerifyPhone,
+      handleClosePage
     }
   }
 })
@@ -188,5 +207,35 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.login-popup-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin: 10px 0 20px;
+
+  font-size: 18px;
+}
+
+.forget-password-popup {
+  height: v-bind(height);
+}
+
+.login-form {
+  padding: 0 20px;
+}
+
+.login-popup-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin: 20px 0 30px;
+}
+
+.login-input-group .van-password-input__item {
+  background-color: rgb(243, 241, 241);
 }
 </style>

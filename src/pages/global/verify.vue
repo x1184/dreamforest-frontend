@@ -4,6 +4,7 @@
       <van-icon
         name="cross"
         color="#969799"
+        @click="handleClosePage"
       />
     </van-sticky>
 
@@ -18,18 +19,19 @@
       position="bottom"
       class="forget-password-popup"
       v-model:show="showDrawer.popUp"
+      @closed="handleCloseVerifyPhone"
     >
-      <div class="login-popup-container">
-        <div class="login-popup-title">
-        </div>
+      <div class="login-popup-title">
+      </div>
 
+      <div class="login-popup-container">
         <van-form validate-trigger="onChange">
           <van-field
             type="tel"
             name="phone"
             label="手机号"
             placeholder="请输入手机号"
-            v-model="telphone"
+            v-model="form.phone"
             @change="handleBlurPhone"
           />
 
@@ -47,13 +49,13 @@
               length="6"
               :mask="false"
               :gutter="10"
-              :value="verifyValue"
+              :value="form.verifyValue"
               :focused="showDrawer.keyboard"
               @focus="handleShowKeyboard"
             />
             <van-number-keyboard
               maxlength="6"
-              v-model="verifyValue"
+              v-model="form.verifyValue"
               :show="showDrawer.keyboard"
               @blur="handleHiddenKeyboard"
             />
@@ -67,6 +69,8 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
 import { Toast } from 'vant'
+import { useRouter } from 'vue-router'
+
 import DfVerify from '../../components/DfVerify.vue'
 
 export default defineComponent({
@@ -75,9 +79,11 @@ export default defineComponent({
   },
 
   setup () {
-    const personal = reactive<any>({
-      username: '',
-      password: ''
+    const router = useRouter()
+    const height = ref('40%')
+    const form = reactive({
+      phone: '',
+      verifyValue: ''
     })
     const timing = reactive({
       disabled: true,
@@ -87,13 +93,10 @@ export default defineComponent({
       popUp: false,
       keyboard: false
     })
-    const telphone = ref('')
-    const verifyValue = ref('')
-    const height = ref('40%')
 
     // 手机号取消聚焦
     const handleBlurPhone = () => {
-      const phone = /^1[3-9]\d{9}$/.test(telphone.value)
+      const phone = /^1[3-9]\d{9}$/.test(form.phone)
 
       if (phone) {
         timing.disabled = false
@@ -104,13 +107,17 @@ export default defineComponent({
         })
       }
     }
-    // 忘记密码弹窗
+    // 打开 验证弹窗
     const handleClickVerifyPhone = () => {
       showDrawer.popUp = true
     }
+    // 关闭验证弹窗
+    const handleCloseVerifyPhone = () => {
+      form.verifyValue = ''
+    }
     // 显示键盘
     const handleShowKeyboard = async () => {
-      const phone = /^1[3-9]\d{9}$/.test(telphone.value)
+      const phone = /^1[3-9]\d{9}$/.test(form.phone)
 
       if (phone) {
         showDrawer.keyboard = true
@@ -143,20 +150,24 @@ export default defineComponent({
         }
       }, 1000)
     }
+    // 关闭此页面
+    const handleClosePage = () => {
+      router.replace('/')
+    }
 
     return {
-      timing,
+      form,
       height,
-      personal,
-      verifyValue,
-      telphone,
+      timing,
       showDrawer,
 
       handleBlurPhone,
       handleClickVerifyPhone,
       handleCreateCount,
       handleShowKeyboard,
-      handleHiddenKeyboard
+      handleHiddenKeyboard,
+      handleCloseVerifyPhone,
+      handleClosePage
     }
   }
 })
