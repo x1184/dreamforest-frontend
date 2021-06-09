@@ -1,5 +1,8 @@
 <template>
-  <van-form class="register-container" @submit="handleRegister">
+  <van-form
+    class="register-container"
+    @submit="handleRegister"
+  >
     <div class="register-name">南枝</div>
 
     <div class="register-field">
@@ -32,7 +35,11 @@
     </div>
 
     <div class="register-button-group">
-      <van-button type="primary" round native-type="submit">
+      <van-button
+        round
+        type="primary"
+        native-type="submit"
+      >
         <div class="register-button__submit">
           提交
         </div>
@@ -45,10 +52,12 @@
 import { defineComponent, reactive, ref } from 'vue'
 import { Toast } from 'vant'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 export default defineComponent({
   setup () {
     const router = useRouter()
+    const store = useStore()
 
     const form = reactive<any>({
       username: '',
@@ -125,11 +134,17 @@ export default defineComponent({
     }
 
     // 注册逻辑
-    const handleRegister = () => {
+    const handleRegister = async () => {
       if (!validate()) return null
-      router.push('/verify-all')
+      const response = await store.dispatch('user/register', {
+        name: form.username,
+        [type.value]: form.phoneOrEmail,
+        password: form.password
+      })
 
-      console.log(type.value)
+      if (response.code === 200) {
+        router.push('/verify-all')
+      }
     }
 
     return {

@@ -44,17 +44,18 @@
           round
           block
           type="primary"
+          @click="handleGotoRegisterPage"
         >
           注册
         </van-button>
       </div>
     </div>
 
-    <div class="login-third">
+    <!-- <div class="login-third">
       <van-icon name="like" />
       <van-icon name="fire" />
       <van-icon name="cart" />
-    </div>
+    </div> -->
 
     <van-popup
       round
@@ -148,13 +149,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
-import {
-  Toast
-} from 'vant'
+import { defineComponent, reactive, ref, watch } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { Toast } from 'vant'
 
 export default defineComponent({
   setup () {
+    const store = useStore()
+    const router = useRouter()
+
+    const height = ref('40%')
     const form = reactive<any>({
       username: '',
       password: '',
@@ -172,28 +177,10 @@ export default defineComponent({
       keyboard: false,
       newPassword: false
     })
-    const height = ref('40%')
-
-    // 手机号取消聚焦
-    const handleBlurPhone = () => {
-      const phone = /^1[3-9]\d{9}$/.test(form.phone)
-
-      if (phone) {
-        timing.disabled = false
-      } else {
-        Toast({
-          message: '请输入正确的手机号',
-          position: 'bottom'
-        })
-      }
-    }
 
     // Function
     // =========================
-    // TODO 处理登陆逻辑
-    const handleLogin = () => {
-      console.log(form)
-
+    const handleLogin = async () => {
       if (!form.username) {
         Toast({
           message: '请输入用户名',
@@ -211,6 +198,19 @@ export default defineComponent({
 
         return null
       }
+
+      const response = await store.dispatch('user/login', {
+        username: form.username,
+        password: form.password
+      })
+
+      if (response.code === 200) {
+        router.push('/')
+      }
+    }
+    // 跳转 注册页面
+    const handleGotoRegisterPage = () => {
+      router.replace('/register')
     }
     // 打开 忘记密码弹窗
     const handleForgetPassword = () => {
@@ -239,7 +239,19 @@ export default defineComponent({
       form.newPassword = ''
       form.confirmPassword = ''
     }
+    // 手机号取消聚焦
+    const handleBlurPhone = () => {
+      const phone = /^1[3-9]\d{9}$/.test(form.phone)
 
+      if (phone) {
+        timing.disabled = false
+      } else {
+        Toast({
+          message: '请输入正确的手机号',
+          position: 'bottom'
+        })
+      }
+    }
     /**
      * 显示键盘
      * 1. 验证手机号，不然无法打开
@@ -270,6 +282,10 @@ export default defineComponent({
 
     // 创建一个定时器
     const handleCreateCount = () => {
+      store.dispatch('verify/sendVerificationCodeByPhone', {
+        phone: form.phone
+      })
+
       timing.disabled = true
       const interval = setInterval(() => {
         timing.count -= 1
@@ -282,6 +298,27 @@ export default defineComponent({
         }
       }, 1000)
     }
+
+    // watch
+    // =========================
+    watch(form, async (newValue) => {
+      if (newValue.verifyValue.length === 6) {
+        const response = await store.dispatch(
+          'verify/verifyPhoneByVerificationCode', {
+            verification: newValue.verifyValue
+          }
+        )
+
+        // 1. 关闭键盘
+        // 2. 关闭忘记密码弹窗
+        // 3. 打开输入密码弹窗
+        if (response.code === 200) {
+          handleHiddenKeyboard()
+          handleCloseForgetPassword()
+          handleShowNewPassword()
+        }
+      }
+    })
 
     return {
       form,
@@ -297,7 +334,8 @@ export default defineComponent({
       handleHiddenKeyboard,
       handleShowNewPassword,
       handleCloseForgetPassword,
-      handleCloseConfirmPassword
+      handleCloseConfirmPassword,
+      handleGotoRegisterPage
     }
   }
 })
@@ -313,11 +351,12 @@ export default defineComponent({
   margin-top: 40px;
 }
 
-.login-name {
+div.login-name {
   display: flex;
   justify-content: center;
   align-items: center;
 
+  margin-top: 0;
   height: 30vh;
   font-size: 24px;
 }
