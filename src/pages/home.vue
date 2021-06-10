@@ -142,23 +142,23 @@ export default defineComponent({
     const tags = reactive<ITagProps[]>([{
       id: '1',
       title: '标签1',
-      select: true
+      select: false
     }, {
       id: '2',
       title: '标签2',
-      select: true
+      select: false
     }, {
       id: '3',
       title: '标签3',
-      select: true
+      select: false
     }, {
       id: '4',
       title: '标签4',
-      select: true
+      select: false
     }, {
       id: '5',
       title: '标签5',
-      select: true
+      select: false
     }])
     const showOverlay = ref(false)
     const allTagsSelect = ref(false)
@@ -208,8 +208,12 @@ export default defineComponent({
     }
     // 点击标签
     const handleClickTagItem = ({ id }: ITagProps) => {
-      const clickTag = tags.find(tag => tag.id === id)
+      for (const item of tags) {
+        item.select = false
+      }
+
       allTagsSelect.value = true
+      const clickTag = tags.find(tag => tag.id === id)
 
       if (!isUndefined(clickTag)) {
         clickTag.select = !clickTag.select
@@ -218,7 +222,9 @@ export default defineComponent({
     // 点击所有的标签
     const handleClickAllTag = () => {
       allTagsSelect.value = !allTagsSelect.value
-      // TODO 发送查询所有想法的请求
+      for (const item of tags) {
+        item.select = false
+      }
     }
     // 点击 headers 右侧的 settings icon
     const handleClickHeaderSettings = () => {

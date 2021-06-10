@@ -1,52 +1,66 @@
 <template>
   <div>
     <df-header></df-header>
-    <df-card
-      :name="mine.name"
-      :description="mine.description" />
+    <df-personal-card></df-personal-card>
     <van-cell-group>
       <van-cell
         center
         clickable
         is-link
-        value="个人资料" />
+        value="个人信息"
+        @click="handleCellClick('/personal')"
+      />
       <van-cell
         center
         clickable
         is-link
-        value="我的点赞" />
+        value="我的点赞"
+        @click="handleCellClick('/my-like')"
+      />
       <van-cell
         center
         clickable
         is-link
-        value="关于" />
+        value="关于"
+        @click="handleCellClick('/about')"
+      />
     </van-cell-group>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
-import DfCard from '../components/DfCard.vue'
+import { useRouter } from 'vue-router'
+
+import DfPersonalCard from '../components/DfPersonalCard.vue'
 import DfHeader from '../layouts/DfHeader.vue'
 
 export default defineComponent({
   name: 'df-personal',
 
   components: {
-    [DfCard.name]: DfCard,
+    [DfPersonalCard.name]: DfPersonalCard,
     [DfHeader.name]: DfHeader
   },
 
   setup () {
+    const router = useRouter()
+
     const mine = reactive({
       id: '7',
       name: 'Jobs',
-      company: 'Apple',
+      createTime: '2021/06/06 21:21',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscingIdea:Lorem ipsum dolor sit amet, consectetur adipiscing'
     })
 
+    const handleCellClick = (path: string) => {
+      router.push(path)
+    }
+
     return {
-      mine
+      mine,
+
+      handleCellClick
     }
   }
 })

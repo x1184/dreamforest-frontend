@@ -41,7 +41,11 @@ export default [
   },
   {
     path: '/detail/:id',
-    component: () => import('../pages/details.vue')
+    component: () => import('../pages/details/idea.vue')
+  },
+  {
+    path: '/project/:id',
+    component: () => import('../pages/details/project.vue')
   },
   {
     path: '/verify',
@@ -50,5 +54,17 @@ export default [
   {
     path: '/verify-all',
     component: () => import('../pages/global/verifyAll.vue')
+  },
+  {
+    path: '/about',
+    component: () => import('../pages/mine/about.vue')
+  },
+  {
+    path: '/my-like',
+    component: () => import('../pages/mine/like.vue')
+  },
+  {
+    path: '/user/:id',
+    component: () => import('../pages/global/user.vue')
   }
 ]

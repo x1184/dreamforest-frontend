@@ -219,7 +219,7 @@
 import { defineComponent, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
-import DfHeader from '../layouts/DfHeader.vue'
+import DfHeader from '../../layouts/DfHeader.vue'
 
 export default defineComponent({
   components: {
