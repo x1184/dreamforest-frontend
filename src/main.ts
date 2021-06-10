@@ -1,5 +1,7 @@
 import { createApp } from 'vue'
 import Vant from 'vant'
+
+import 'animate.css'
 import 'vant/lib/index.css'
 
 import router from './routers'

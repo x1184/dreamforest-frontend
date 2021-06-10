@@ -8,12 +8,16 @@
     @click-left="handleClickLeft"
     @click-right="handleClickRight"
   >
-    <template #right>
-      <van-icon :name="icon" size="18" />
+    <template #title>
+      <slot name="title"></slot>
     </template>
 
-    <template #title>
-      <slot></slot>
+    <template #left>
+      <slot name="left"></slot>
+    </template>
+
+    <template #right>
+      <slot name="right"></slot>
     </template>
   </van-nav-bar>
 </template>
@@ -21,7 +25,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { NavBar, Icon } from 'vant'
-import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'df-header',
@@ -36,27 +39,15 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
-    handleClickRight: {
-      type: Function
-    },
     title: {
       type: String,
       default: ''
     },
-    icon: {
-      type: String
-    }
-  },
-
-  setup () {
-    const router = useRouter()
-
-    const handleClickLeft = () => {
-      router.back()
-    }
-
-    return {
-      handleClickLeft
+    handleClickRight: {
+      type: Function
+    },
+    handleClickLeft: {
+      type: Function
     }
   }
 })

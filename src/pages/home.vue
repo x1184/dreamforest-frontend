@@ -1,15 +1,44 @@
 <template>
   <div>
-    <df-header icon="setting-o" @handleClickRight="handleClickHeaderSettings">
-      <div class="tags-container">
-        <van-tag
-          type="primary"
+    <df-header @handleClickRight="handleClickHeaderSettings">
+      <template #title>
+        <span
+          class="tags-container"
           v-for="tag of tags"
-          :plain="tag.show ? false : true"
           :key="tag.id"
-          @click="handleClickTagItem(tag)"
-        >标签</van-tag>
-      </div>
+        >
+          <van-tag
+            round
+            type="primary"
+            :plain="tag.select ? false : true"
+            @click="handleClickTagItem(tag)"
+          >
+            <span class="header-tag">
+              {{ tag.title }}
+            </span>
+          </van-tag>
+        </span>
+      </template>
+
+      <template #left>
+        <van-tag
+          round
+          type="primary"
+          :plain="allTagsSelect"
+          @click="handleClickAllTag"
+        >
+          <span class="header-tag">
+            所有
+          </span>
+        </van-tag>
+      </template>
+
+      <template #right>
+        <van-icon
+          name="setting-o"
+          size="18"
+        />
+      </template>
     </df-header>
 
     <van-list
@@ -23,23 +52,37 @@
         :key="item.id"
         :id="item.id"
         :name="item.name"
-        :thumb="item.thumb"
-        :company="item.company"
-        :description="item.description"></df-card>
+        :title="item.title"
+        :avatar="item.avatar"
+        :createTime="item.createTime"
+        :link="item.link"
+      >
+      </df-card>
     </van-list>
 
     <!-- 悬浮按钮 -->
     <div class="fixed">
-      <span class="idea" :style="{ display }">
-        <van-tag @click="handleClickFloatButtonItem('idea')">
-          想法
-        </van-tag>
-        <van-tag @click="handleClickFloatButtonItem('project')">
-          项目
-        </van-tag>
+      <span class="idea">
+        <van-button
+          round
+          @click="handleClickFloatButtonItem('idea')"
+        >
+          <van-icon name="gem-o" />
+        </van-button>
+        <van-button
+          round
+          @click="handleClickFloatButtonItem('project')"
+        >
+          <van-icon name="gift-o" />
+        </van-button>
       </span>
 
-      <van-button hairline round type="primary" @click="handleShow">
+      <van-button
+        hairline
+        round
+        type="primary"
+        @click="handleShow"
+      >
         <template #icon>
           <van-icon name="plus" />
         </template>
@@ -47,8 +90,14 @@
     </div>
 
     <!-- 遮罩层 -->
-    <van-overlay :show="showOverlay" @click="showOverlay = false">
-      <div class="wrapper" @click.stop>
+    <van-overlay
+      :show="showOverlay"
+      @click="showOverlay = false"
+    >
+      <div
+        class="wrapper"
+        @click.stop
+      >
         <div class="block" />
       </div>
     </van-overlay>
@@ -59,28 +108,15 @@
 import { defineComponent, reactive, ref } from 'vue'
 import { isUndefined } from 'lodash'
 import { useRouter } from 'vue-router'
-import DfHeader from '../layouts/DfHeader.vue'
 
+import { IIdeaProps, IPersonalProps, ITagProps } from '../interface'
+import DfHeader from '../layouts/DfHeader.vue'
 import DfCard from '../components/DfCard.vue'
 
-interface IListItemProps {
-  id: string | number;
-  thumb?: string;
-  name: string;
-  company?: string;
-  description?: string;
-}
-
 interface IListProps {
-  data: IListItemProps[];
+  data: (IIdeaProps & IPersonalProps)[];
   loading: boolean;
   finished: boolean;
-}
-
-interface ITagItemProps {
-  id: string | number;
-  label: string;
-  show: boolean;
 }
 
 export default defineComponent({
@@ -93,6 +129,7 @@ export default defineComponent({
 
   setup () {
     const router = useRouter()
+
     // 是否显示悬浮按钮
     const display = ref('none')
     // idea 列表
@@ -102,42 +139,90 @@ export default defineComponent({
       finished: false
     })
     // 标签列表
-    const tags = reactive<ITagItemProps[]>([])
-    // 显示遮罩层
+    const tags = reactive<ITagProps[]>([{
+      id: '1',
+      title: '标签1',
+      select: true
+    }, {
+      id: '2',
+      title: '标签2',
+      select: true
+    }, {
+      id: '3',
+      title: '标签3',
+      select: true
+    }, {
+      id: '4',
+      title: '标签4',
+      select: true
+    }, {
+      id: '5',
+      title: '标签5',
+      select: true
+    }])
     const showOverlay = ref(false)
-
-    // 显示悬浮按钮
-    const handleShow = () => {
-      display.value = 'block'
-    }
+    const allTagsSelect = ref(false)
 
     // TODO 请求数据
     const handleLoad = () => {
-      lists.data = []
+      lists.data = [{
+        id: '1',
+        title: '我想打造一个关于梦想想法创意交流的社区',
+        content: '',
+        name: '马云',
+        createTime: '2021/06/06 21:21',
+        link: '马云',
+        times: {
+          like: 123,
+          view: 123
+        },
+        tags: []
+      }, {
+        id: '1',
+        title: '我想打造一个关于梦想想法创意交流的社区',
+        content: '',
+        name: '马云',
+        createTime: '2021/06/06 21:21',
+        link: '马云',
+        times: {
+          like: 123,
+          view: 123
+        },
+        tags: [{
+          title: '标签1'
+        }]
+      }]
       lists.loading = true
       lists.finished = true
     }
 
     // 点击事件
     // ===================================
+    // 显示悬浮按钮
+    const handleShow = () => {
+      display.value = 'block'
+    }
     // 点击悬浮按钮
     const handleClickFloatButtonItem = (type: string) => {
       router.push(`/form/${type}`)
     }
     // 点击标签
-    const handleClickTagItem = ({ id }: ITagItemProps) => {
+    const handleClickTagItem = ({ id }: ITagProps) => {
       const clickTag = tags.find(tag => tag.id === id)
+      allTagsSelect.value = true
 
       if (!isUndefined(clickTag)) {
-        clickTag.show = !clickTag.show
+        clickTag.select = !clickTag.select
       }
+    }
+    // 点击所有的标签
+    const handleClickAllTag = () => {
+      allTagsSelect.value = !allTagsSelect.value
+      // TODO 发送查询所有想法的请求
     }
     // 点击 headers 右侧的 settings icon
     const handleClickHeaderSettings = () => {
-      console.log(215, 1)
       showOverlay.value = true
-
-      console.log(217, showOverlay.value)
     }
 
     return {
@@ -145,9 +230,12 @@ export default defineComponent({
       lists,
       display,
       showOverlay,
+      allTagsSelect,
+
       handleLoad,
       handleShow,
       handleClickTagItem,
+      handleClickAllTag,
       handleClickHeaderSettings,
       handleClickFloatButtonItem
     }
@@ -171,12 +259,21 @@ export default defineComponent({
 }
 
 .idea {
-  display: none;
+  display: v-bind(display);
   font-size: 20px;
 }
 
-.tags-container {
-  width: 100%;
+.van-nav-bar__title {
   overflow-x: auto;
+  text-overflow: unset;
+}
+
+.tags-container {
+  margin-left: 10px;
+  width: 100%;
+}
+
+.header-tag {
+  padding: 5px 10px;
 }
 </style>
