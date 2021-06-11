@@ -44,7 +44,7 @@
           round
           block
           type="primary"
-          @click="handleGotoRegisterPage"
+          @click="handleGotoPage('/register')"
         >
           注册
         </van-button>
@@ -69,9 +69,7 @@
           找回密码
         </div>
 
-        <van-form
-          validate-trigger="onChange"
-        >
+        <van-form validate-trigger="onChange">
           <van-field
             type="tel"
             name="phone"
@@ -208,9 +206,9 @@ export default defineComponent({
         router.push('/')
       }
     }
-    // 跳转 注册页面
-    const handleGotoRegisterPage = () => {
-      router.replace('/register')
+    // 跳转 页面
+    const handleGotoPage = (path: string) => {
+      router.push(path)
     }
     // 打开 忘记密码弹窗
     const handleForgetPassword = () => {
@@ -335,7 +333,7 @@ export default defineComponent({
       handleShowNewPassword,
       handleCloseForgetPassword,
       handleCloseConfirmPassword,
-      handleGotoRegisterPage
+      handleGotoPage
     }
   }
 })

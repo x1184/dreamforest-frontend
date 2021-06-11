@@ -3,10 +3,11 @@ import request from '../utils/request'
 const MODULE = 'idea'
 
 // 获取所有的想法
-export async function getAllIdea () {
+export async function getAllIdea (data: any) {
   return request({
     method: 'post',
-    url: `/${MODULE}/getAllIdea`
+    url: `/${MODULE}/getAllIdea`,
+    data
   })
 }
 

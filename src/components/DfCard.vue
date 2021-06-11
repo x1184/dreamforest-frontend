@@ -1,6 +1,9 @@
 <template>
   <div class="df-card-container">
-    <div class="df-card-avatar" @click="handleClick">
+    <div
+      class="df-card-avatar"
+      @click="handleClick"
+    >
       <div>
         <img
           :src="avatar"
@@ -23,27 +26,30 @@
           round
           plain
           color="#000000"
+          v-show="cardTags.length"
         >
-          <span class="df-card-tag-item">标签</span>
+          <span class="df-card-tag-item">{{ cardTags.length ? cardTags[0].title : '' }}</span>
         </van-tag>
         <van-tag
           round
           plain
           color="#000000"
           @click="handleToggleTags"
+          v-show="cardTags.length > 1"
         >
           <span class="df-card-tag-item">...</span>
         </van-tag>
       </div>
 
       <div class="df-card-icon">
-        <div>
+        <div v-show="type.includes('view')">
           <span>
             <van-icon name="discount" />
           </span>
           <span>{{ times.view }}</span>
         </div>
-        <div>
+
+        <div v-show="type.includes('like')">
           <span>
             <van-icon name="like-o" />
           </span>
@@ -51,7 +57,8 @@
             {{ times.like }}
           </span>
         </div>
-        <div>
+
+        <div v-show="type.includes('share')">
           <span>
             <van-icon name="share-o" />
           </span>
@@ -69,15 +76,10 @@
           round
           plain
           color="#000000"
+          v-for="tag of cardTags"
+          :key="tag.id"
         >
-          <span class="df-card-tag-item">标签</span>
-        </van-tag>
-        <van-tag
-          round
-          plain
-          color="#000000"
-        >
-          <span class="df-card-tag-item">...</span>
+          <span class="df-card-tag-item">{{ tag.title }}</span>
         </van-tag>
       </div>
     </transition>
@@ -87,6 +89,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { ITagProps } from '../interface'
 
 export default defineComponent({
   name: 'df-card',
@@ -117,13 +120,22 @@ export default defineComponent({
     createTime: {
       type: String,
       required: true
+    },
+    tags: {
+      type: Array,
+      required: true
+    },
+    type: {
+      type: Array,
+      required: true
     }
   },
 
-  setup ({ id }) {
+  setup ({ id, tags }) {
     const router = useRouter()
 
     const showTags = ref(false)
+    const cardTags: ITagProps[] = tags as ITagProps[]
 
     const handleToggleTags = () => {
       showTags.value = !showTags.value
@@ -135,6 +147,7 @@ export default defineComponent({
 
     return {
       showTags,
+      cardTags,
 
       handleToggleTags,
       handleClick
@@ -151,8 +164,8 @@ export default defineComponent({
 
   flex-flow: column;
 
-  margin: 10px 20px;
-  padding: 10px;
+  margin: 10px;
+  padding: 10px 5px;
 
   font-size: 16px;
   box-shadow: 0.2rem 0.2rem 0.13333rem #88888861;
@@ -199,7 +212,7 @@ export default defineComponent({
 
 .df-card-icon {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: flex-end;
   align-items: center;
 
   flex: 1;
@@ -209,8 +222,6 @@ export default defineComponent({
   display: flex;
   justify-content: flex-end;
   align-items: center;
-
-  margin-left: 5px;
 }
 
 .df-card-icon span {
@@ -221,8 +232,14 @@ export default defineComponent({
   font-size: 24px;
 }
 
+.df-card-tags {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
 .df-card-tags > span {
-  margin-left: 10px;
+  margin-left: 3px;
 }
 
 .df-card-tag-item {
@@ -230,11 +247,12 @@ export default defineComponent({
 }
 
 .df-card-hidden-tags {
-  margin: 5px 10px;
+  margin: 5px 0;
   width: 100%;
 }
 
 .df-card-hidden-tags > span {
-  margin-left: 10px;
+  margin-top: 5px;
+  margin-left: 3px;
 }
 </style>

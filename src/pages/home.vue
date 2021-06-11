@@ -4,14 +4,14 @@
       <template #title>
         <span
           class="tags-container"
-          v-for="tag of tags"
+          v-for="(tag, index) of tags"
           :key="tag.id"
         >
           <van-tag
             round
             type="primary"
-            :plain="tag.select ? false : true"
-            @click="handleClickTagItem(tag)"
+            :plain="tagSelected[index] ? false : true"
+            @click="handleClickTagItem(index, tag.id)"
           >
             <span class="header-tag">
               {{ tag.title }}
@@ -24,7 +24,7 @@
         <van-tag
           round
           type="primary"
-          :plain="allTagsSelect"
+          :plain="allSelected ? false : true"
           @click="handleClickAllTag"
         >
           <span class="header-tag">
@@ -48,14 +48,17 @@
       @load="handleLoad"
     >
       <df-card
-        v-for="item in lists.data"
+        v-for="item in ideas"
         :key="item.id"
         :id="item.id"
-        :name="item.name"
+        :name="item.initiator?.name"
         :title="item.title"
-        :avatar="item.avatar"
+        :avatar="item.initiator?.avatar"
         :createTime="item.createTime"
         :link="item.link"
+        :tags="item.tags"
+        :times="item.times"
+        :type="['view', 'like', 'share']"
       >
       </df-card>
     </van-list>
@@ -105,16 +108,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
-import { isUndefined } from 'lodash'
+import { defineComponent, reactive, ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
-import { IIdeaProps, IPersonalProps, ITagProps } from '../interface'
 import DfHeader from '../layouts/DfHeader.vue'
 import DfCard from '../components/DfCard.vue'
 
 interface IListProps {
-  data: (IIdeaProps & IPersonalProps)[];
   loading: boolean;
   finished: boolean;
 }
@@ -129,71 +130,49 @@ export default defineComponent({
 
   setup () {
     const router = useRouter()
+    const store = useStore()
+
+    // 标签列表
+    const tags = computed(() => store.state.tags.data)
+    // 想法列表
+    const ideas = computed(() => store.state.ideas.data)
 
     // 是否显示悬浮按钮
     const display = ref('none')
+    // 是否显示遮罩层
+    const showOverlay = ref(false)
+    const allSelected = ref(true)
+    const tagSelected = reactive((new Array(tags.value.length)).fill(false))
+    const tagId = ref('')
+    const page = reactive({
+      pageIndex: 1,
+      pageSize: 10
+    })
     // idea 列表
     const lists = reactive<IListProps>({
-      data: [],
       loading: false,
       finished: false
     })
-    // 标签列表
-    const tags = reactive<ITagProps[]>([{
-      id: '1',
-      title: '标签1',
-      select: false
-    }, {
-      id: '2',
-      title: '标签2',
-      select: false
-    }, {
-      id: '3',
-      title: '标签3',
-      select: false
-    }, {
-      id: '4',
-      title: '标签4',
-      select: false
-    }, {
-      id: '5',
-      title: '标签5',
-      select: false
-    }])
-    const showOverlay = ref(false)
-    const allTagsSelect = ref(false)
 
-    // TODO 请求数据
+    onMounted(() => {
+      store.dispatch('tags/findAll')
+    })
+
+    // 加载效果
     const handleLoad = () => {
-      lists.data = [{
-        id: '1',
-        title: '我想打造一个关于梦想想法创意交流的社区',
-        content: '',
-        name: '马云',
-        createTime: '2021/06/06 21:21',
-        link: '马云',
-        times: {
-          like: 123,
-          view: 123
-        },
-        tags: []
-      }, {
-        id: '1',
-        title: '我想打造一个关于梦想想法创意交流的社区',
-        content: '',
-        name: '马云',
-        createTime: '2021/06/06 21:21',
-        link: '马云',
-        times: {
-          like: 123,
-          view: 123
-        },
-        tags: [{
-          title: '标签1'
-        }]
-      }]
-      lists.loading = true
-      lists.finished = true
+      lists.loading = false
+      if (allSelected) {
+        store.dispatch('ideas/getAllIdea', {
+          ...page
+        })
+      } else {
+        store.dispatch('ideas/findIdeaByTagId', {
+          id: tagId,
+          ...page
+        })
+      }
+
+      page.pageIndex += 1
     }
 
     // 点击事件
@@ -206,42 +185,55 @@ export default defineComponent({
     const handleClickFloatButtonItem = (type: string) => {
       router.push(`/form/${type}`)
     }
-    // 点击标签
-    const handleClickTagItem = ({ id }: ITagProps) => {
-      for (const item of tags) {
-        item.select = false
-      }
-
-      allTagsSelect.value = true
-      const clickTag = tags.find(tag => tag.id === id)
-
-      if (!isUndefined(clickTag)) {
-        clickTag.select = !clickTag.select
-      }
-    }
-    // 点击所有的标签
-    const handleClickAllTag = () => {
-      allTagsSelect.value = !allTagsSelect.value
-      for (const item of tags) {
-        item.select = false
-      }
-    }
     // 点击 headers 右侧的 settings icon
     const handleClickHeaderSettings = () => {
       showOverlay.value = true
     }
+    // 点击某个标签
+    const handleClickTagItem = (index: number, id: string) => {
+      scroll({
+        top: 0
+      })
+
+      page.pageIndex = 1
+      tagSelected.fill(false)
+      tagSelected[index] = true
+      allSelected.value = false
+      tagId.value = id
+
+      store.dispatch('ideas/findIdeaByTagId', {
+        id,
+        ...page
+      })
+    }
+    // 点击所有标签
+    const handleClickAllTag = () => {
+      scroll({
+        top: 0
+      })
+
+      tagSelected.fill(false)
+      allSelected.value = true
+      page.pageIndex = 1
+
+      store.dispatch('ideas/getAllIdea', {
+        ...page
+      })
+    }
 
     return {
       tags,
+      ideas,
       lists,
       display,
+      allSelected,
+      tagSelected,
       showOverlay,
-      allTagsSelect,
 
       handleLoad,
       handleShow,
-      handleClickTagItem,
       handleClickAllTag,
+      handleClickTagItem,
       handleClickHeaderSettings,
       handleClickFloatButtonItem
     }

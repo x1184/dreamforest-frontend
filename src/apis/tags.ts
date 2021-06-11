@@ -3,11 +3,10 @@ import request from '../utils/request'
 const MODULE = 'tags'
 
 // 查询所有的标签
-export async function findAll (data: any) {
+export async function findAll () {
   return request({
     method: 'post',
-    url: `/${MODULE}/findAll`,
-    data
+    url: `/${MODULE}/findAll`
   })
 }
 

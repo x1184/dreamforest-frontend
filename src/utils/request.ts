@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Toast } from 'vant'
 
 const service = axios.create({
-  baseURL: '',
+  baseURL: 'http://192.168.11.125:4000/api/dream-forest',
   timeout: 5000 // request timeout
 })
 
@@ -22,7 +22,7 @@ service.interceptors.response.use(
     const res = response.data
 
     Toast({
-      message: res.data,
+      message: res.message,
       position: 'bottom',
       duration: 1000
     })
@@ -30,7 +30,7 @@ service.interceptors.response.use(
     if (response.status !== 200) {
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
-      return res.data
+      return response.data
     }
   },
   (error: Error) => {

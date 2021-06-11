@@ -65,6 +65,14 @@ export async function updatePasswordByOldPassword (data: any) {
   })
 }
 
+// 查询个人信息
+export async function findUserInfoByUserId () {
+  return request({
+    method: 'POST',
+    url: `/${MODULE}/findUserInfoByUserId`
+  })
+}
+
 // 登录
 export async function login (data: any) {
   return request({
