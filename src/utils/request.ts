@@ -1,5 +1,7 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Toast } from 'vant'
+
+import router from '../routers'
 
 const service = axios.create({
   baseURL: 'http://192.168.11.125:4000/api/dream-forest',
@@ -33,7 +35,26 @@ service.interceptors.response.use(
       return response.data
     }
   },
-  (error: Error) => {
+  (error: AxiosError) => {
+    const response = error.response
+
+    switch (response.status) {
+      case 403:
+        router.push('/login')
+        break
+
+      case 401:
+        router.push('/verify')
+        break
+
+      case 404:
+        router.push('/404')
+        break
+
+      default:
+        break
+    }
+
     return Promise.reject(error)
   }
 )
