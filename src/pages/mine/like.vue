@@ -20,7 +20,7 @@
       @load="handleLoad"
     >
       <df-card
-        v-for="item in lists.data"
+        v-for="item in ideas"
         :key="item.id"
         :id="item.id"
         :name="item.name"
@@ -35,8 +35,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 import { IIdeaProps, IPersonalProps } from '../../interface'
 import DfHeader from '../../layouts/DfHeader.vue'
@@ -58,53 +59,38 @@ export default defineComponent({
 
   setup () {
     const router = useRouter()
+    const store = useStore()
 
-    // idea 列表
+    const ideas = computed(() => store.state.ideas.data)
+    // 列表
     const lists = reactive<IListProps>({
-      data: [],
       loading: false,
       finished: false
     })
+    // 分页参数
+    const page = reactive({
+      pageIndex: 1,
+      pageSize: 10
+    })
 
+    // 后退
     const handleGoback = () => {
       router.go(-1)
     }
 
-    // TODO 请求数据
+    // 加载效果
     const handleLoad = () => {
-      lists.data = [{
-        id: '1',
-        title: '我想打造一个关于梦想想法创意交流的社区',
-        content: '',
-        name: '马云',
-        createTime: '2021/06/06 21:21',
-        link: '马云',
-        times: {
-          like: 123,
-          view: 123
-        },
-        tags: []
-      }, {
-        id: '1',
-        title: '我想打造一个关于梦想想法创意交流的社区',
-        content: '',
-        name: '马云',
-        createTime: '2021/06/06 21:21',
-        link: '马云',
-        times: {
-          like: 123,
-          view: 123
-        },
-        tags: [{
-          title: '标签1'
-        }]
-      }]
-      lists.loading = true
-      lists.finished = true
+      lists.loading = false
+      store.dispatch('ideas/getAllIdea', {
+        ...page
+      })
+
+      page.pageIndex += 1
     }
 
     return {
       lists,
+      ideas,
 
       handleGoback,
       handleLoad

@@ -128,7 +128,7 @@ export default defineComponent({
     [DfHeader.name]: DfHeader
   },
 
-  setup () {
+  setup() {
     const router = useRouter()
     const store = useStore()
 

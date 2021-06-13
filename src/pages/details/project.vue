@@ -56,8 +56,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useStore } from 'vuex'
 
 import DfHeader from '../../layouts/DfHeader.vue'
 
@@ -66,24 +67,28 @@ export default defineComponent({
     [DfHeader.name]: DfHeader
   },
 
-  setup () {
+  setup() {
     const router = useRouter()
     const { params } = useRoute()
-    const showPopup = ref(false)
+    const store = useStore()
+
+    const projectDetail = computed(() => store.state.project)
+
+    // onMounted
+    onMounted(() => {
+      store.dispatch('projects/findProjectDetailByProjectId', {
+        id: params.id
+      })
+    })
 
     const handleGoback = () => {
       router.go(-1)
     }
-    const handleToggleShowPopup = () => {
-      showPopup.value = !showPopup.value
-    }
 
     return {
-      id: params.id,
-      showPopup,
+      projectDetail,
 
-      handleGoback,
-      handleToggleShowPopup
+      handleGoback
     }
   }
 })

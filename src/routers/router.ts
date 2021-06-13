@@ -16,11 +16,11 @@ export default [
     }, {
       path: 'star',
       components: {
-        default: () => import('../pages/home.vue'),
+        default: () => import('../pages/star.vue'),
         footer: Footer
       }
     }, {
-      path: 'mine',
+      path: 'personal',
       components: {
         default: () => import('../pages/personal.vue'),
         footer: Footer
@@ -40,7 +40,7 @@ export default [
     component: Form
   },
   {
-    path: '/detail/:id',
+    path: '/idea/:id',
     component: () => import('../pages/details/idea.vue')
   },
   {
@@ -66,5 +66,9 @@ export default [
   {
     path: '/user/:id',
     component: () => import('../pages/global/user.vue')
+  },
+  {
+    path: '/mine',
+    component: () => import('../pages/mine/mine.vue')
   }
 ]

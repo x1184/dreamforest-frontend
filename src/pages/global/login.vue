@@ -280,7 +280,7 @@ export default defineComponent({
 
     // 创建一个定时器
     const handleCreateCount = () => {
-      store.dispatch('verify/sendVerificationCodeByPhone', {
+      store.dispatch('user/sendVerificationCodeByPhone', {
         phone: form.phone
       })
 
@@ -302,7 +302,7 @@ export default defineComponent({
     watch(form, async (newValue) => {
       if (newValue.verifyValue.length === 6) {
         const response = await store.dispatch(
-          'verify/verifyPhoneByVerificationCode', {
+          'user/verifyPhoneByVerificationCode', {
             verification: newValue.verifyValue
           }
         )
@@ -314,6 +314,8 @@ export default defineComponent({
           handleHiddenKeyboard()
           handleCloseForgetPassword()
           handleShowNewPassword()
+
+          router.push('/')
         }
       }
     })

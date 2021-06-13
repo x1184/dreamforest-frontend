@@ -131,7 +131,7 @@ export default defineComponent({
     }
   },
 
-  setup ({ id, tags }) {
+  setup({ id, tags }) {
     const router = useRouter()
 
     const showTags = ref(false)
@@ -142,7 +142,7 @@ export default defineComponent({
     }
 
     const handleClick = () => {
-      router.push(`/detail/${id}`)
+      router.push(`/idea/${id}`)
     }
 
     return {

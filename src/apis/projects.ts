@@ -11,7 +11,7 @@ export async function addProject (data: any) {
   })
 }
 
-// findProjectDetailByProjectId
+// 通过项目id查询项目详情
 export async function findProjectDetailByProjectId (data: any) {
   return request({
     method: 'post',

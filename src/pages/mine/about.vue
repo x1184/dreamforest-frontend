@@ -16,6 +16,7 @@
       >
       <div>当前版本 MVP</div>
     </div>
+
     <div>
       <van-cell-group>
         <van-cell
