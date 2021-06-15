@@ -124,7 +124,7 @@
           <van-field
             type="password"
             name="password"
-            label="密码"
+            label="新密码"
             placeholder="请输入您的新密码"
             v-model="form.newPassword"
           />
@@ -132,12 +132,16 @@
           <van-field
             type="password"
             name="password"
-            label="密码"
+            label="确认密码"
             placeholder="请重新输入"
             v-model="form.confirmPassword"
           />
 
-          <van-button type="primary">
+          <van-button
+            block
+            type="primary"
+            @click.stop="handleConfirmModify"
+          >
             确认修改
           </van-button>
         </van-form>
@@ -277,7 +281,34 @@ export default defineComponent({
         height.value = '45%'
       }, 300)
     }
+    // 确认修改按钮
+    const handleConfirmModify = async () => {
+      if (
+        !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,30}$/.test(form.newPassword)
+      ) {
+        Toast({
+          message: '请输入 6-30 位，包含大小写字母和数字的密码'
+        })
 
+        return false
+      }
+
+      if (form.newPassword !== form.confirmPassword) {
+        Toast({
+          message: '两次输入的密码不相同'
+        })
+
+        return false
+      }
+
+      const response = await store.dispatch('user/updatePasswordByPhone', {
+        password: form.newPassword
+      })
+
+      if (response.code === 200) {
+        showDrawer.newPassword = false
+      }
+    }
     // 创建一个定时器
     const handleCreateCount = () => {
       store.dispatch('user/sendVerificationCodeByPhone', {
@@ -314,8 +345,6 @@ export default defineComponent({
           handleHiddenKeyboard()
           handleCloseForgetPassword()
           handleShowNewPassword()
-
-          router.push('/')
         }
       }
     })
@@ -333,6 +362,7 @@ export default defineComponent({
       handleShowKeyboard,
       handleHiddenKeyboard,
       handleShowNewPassword,
+      handleConfirmModify,
       handleCloseForgetPassword,
       handleCloseConfirmPassword,
       handleGotoPage

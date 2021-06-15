@@ -14,7 +14,17 @@
     </df-header>
 
     <div>
-      <div></div>
+      <div>
+        <label for="avatar_uploader">
+          点击上传头像
+        </label>
+        <input
+          id="avatar_uploader"
+          name="avatar_uploader"
+          type="file"
+          accept="image/*;"
+        >
+      </div>
 
       <van-cell
         center
