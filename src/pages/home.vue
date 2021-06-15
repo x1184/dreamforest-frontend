@@ -136,6 +136,7 @@ export default defineComponent({
     const tags = computed(() => store.state.tags.data)
     // 想法列表
     const ideas = computed(() => store.state.ideas.data)
+    const total = computed(() => store.state.ideas.total)
 
     // 是否显示悬浮按钮
     const display = ref('none')
@@ -160,19 +161,26 @@ export default defineComponent({
 
     // 加载效果
     const handleLoad = () => {
-      lists.loading = false
-      if (allSelected) {
-        store.dispatch('ideas/getAllIdea', {
-          ...page
-        })
+      if (ideas.value.length >= total.value) {
+        lists.finished = true
+        lists.loading = true
       } else {
-        store.dispatch('ideas/findIdeaByTagId', {
-          id: tagId,
-          ...page
-        })
+        lists.loading = false
+        if (allSelected) {
+          store.dispatch('ideas/getAllIdea', {
+            ...page
+          })
+        } else {
+          store.dispatch('ideas/findIdeaByTagId', {
+            id: tagId,
+            ...page
+          })
+        }
+
+        page.pageIndex += 1
       }
 
-      page.pageIndex += 1
+      console.log(ideas.value.length, total.value)
     }
 
     // 点击事件
@@ -195,6 +203,8 @@ export default defineComponent({
         top: 0
       })
 
+      lists.loading = false
+      lists.finished = false
       page.pageIndex = 1
       tagSelected.fill(false)
       tagSelected[index] = true
@@ -212,6 +222,8 @@ export default defineComponent({
         top: 0
       })
 
+      lists.loading = false
+      lists.finished = false
       tagSelected.fill(false)
       allSelected.value = true
       page.pageIndex = 1

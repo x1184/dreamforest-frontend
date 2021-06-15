@@ -8,10 +8,12 @@ import { IIdeaProps } from '../../interface'
 
 interface IState {
   data: IIdeaProps[];
+  total: number;
 }
 
 const initialState: IState = {
-  data: []
+  data: [],
+  total: 0
 }
 
 export default {
@@ -28,6 +30,10 @@ export default {
 
     addIdeas (state: IState, payload: IIdeaProps[]) {
       state.data.push(...payload)
+    },
+
+    updateTotal (state: IState, payload: number) {
+      state.total = payload
     }
   },
 
@@ -40,9 +46,11 @@ export default {
 
       if (response.code === 200) {
         if (payload.pageIndex === 1) {
-          commit('updateIdeas', response.data)
+          commit('updateIdeas', response.data.ideas)
+          commit('updateTotal', response.data.total)
         } else {
-          commit('addIdeas', response.data)
+          commit('addIdeas', response.data.ideas)
+          commit('updateTotal', response.data.total)
         }
       }
     },
@@ -59,9 +67,11 @@ export default {
 
       if (response.code === 200) {
         if (payload.pageIndex === 1) {
-          commit('updateIdeas', response.data)
+          commit('updateIdeas', response.data.ideas)
+          commit('updateTotal', response.data.total)
         } else {
-          commit('addIdeas', response.data)
+          commit('addIdeas', response.data.ideas)
+          commit('updateTotal', response.data.total)
         }
       }
     }
