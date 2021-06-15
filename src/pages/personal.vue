@@ -1,7 +1,10 @@
 <template>
   <div>
     <df-header></df-header>
-    <df-personal-card></df-personal-card>
+    <df-personal-card
+      :user="user"
+      type="createTime"
+    ></df-personal-card>
 
     <van-cell-group>
       <van-cell
@@ -30,8 +33,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 import DfPersonalCard from '../components/DfPersonalCard.vue'
 import DfHeader from '../layouts/DfHeader.vue'
@@ -46,15 +50,20 @@ export default defineComponent({
 
   setup () {
     const router = useRouter()
+    const store = useStore()
 
-    const mine = reactive({})
+    const user = computed(() => store.state.user.information)
+
+    onMounted(() => {
+      store.dispatch('user/findUserInfoByToken')
+    })
 
     const handleCellClick = (path: string) => {
       router.push(path)
     }
 
     return {
-      mine,
+      user,
 
       handleCellClick
     }

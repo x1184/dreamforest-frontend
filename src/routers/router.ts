@@ -70,5 +70,9 @@ export default [
   {
     path: '/mine',
     component: () => import('../pages/mine/mine.vue')
+  },
+  {
+    path: '/modify',
+    component: () => import('../pages/mine/modify.vue')
   }
 ]

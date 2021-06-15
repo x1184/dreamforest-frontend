@@ -42,6 +42,13 @@
       </div>
 
       <div class="df-card-icon">
+        <div v-show="type.includes('comment')">
+          <span>
+            <van-icon name="chat-o" />
+          </span>
+          <span>{{ times.comment }}</span>
+        </div>
+
         <div v-show="type.includes('view')">
           <span>
             <van-icon name="discount" />

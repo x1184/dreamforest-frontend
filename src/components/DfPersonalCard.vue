@@ -2,17 +2,22 @@
   <div class="df-personal-container">
     <div>
       <img
-        src="https://img.yzcdn.cn/vant/ipad.jpeg'"
         alt="avatar"
+        :src="user.avatar"
       >
     </div>
     <div class="df-personal-content">
-      <span>马云</span>
+      <span>{{ user.name }}</span>
       <span>
-        ID: 123
+        ID: {{ user.showId }}
       </span>
-      <span>
-        介绍：XXX
+      <span v-if="type === 'description'">
+        介绍：{{ user.description }}
+      </span>
+
+      <span v-if="type === 'createTime'">
+        <div>注册时间：</div>
+        <div>{{ user.createTime }}</div>
       </span>
     </div>
   </div>
@@ -22,7 +27,26 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'df-personal-card'
+  name: 'df-personal-card',
+
+  props: {
+    user: {
+      type: Object,
+      default: () => ({
+        avatar: '',
+        name: '',
+        showId: '',
+        description: '',
+        createTime: ''
+      }),
+      required: true
+    },
+
+    type: {
+      type: String,
+      default: 'description'
+    }
+  }
 })
 </script>
 
@@ -54,7 +78,7 @@ export default defineComponent({
   margin-left: 20px;
 }
 
-.df-personal-content span {
-  margin-top: 2px;
+.df-personal-content > span {
+  margin-top: 5px;
 }
 </style>

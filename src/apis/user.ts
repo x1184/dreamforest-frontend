@@ -66,10 +66,19 @@ export async function updatePasswordByOldPassword (data: any) {
 }
 
 // 查询个人信息
-export async function findUserInfoByUserId () {
+export async function findUserInfoByUserId (data: any) {
   return request({
     method: 'POST',
-    url: `/${MODULE}/findUserInfoByUserId`
+    url: `/${MODULE}/findUserInfoByUserId`,
+    data
+  })
+}
+
+// 通过 token 查询个人信息
+export async function findUserInfoByToken () {
+  return request({
+    method: 'POST',
+    url: `/${MODULE}/findUserInfoByToken`
   })
 }
 

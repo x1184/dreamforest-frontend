@@ -13,7 +13,7 @@ interface IState {
 
 const initialState: IState = {
   data: [],
-  total: 0
+  total: 1
 }
 
 export default {

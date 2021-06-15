@@ -1,7 +1,8 @@
 import { ActionContext } from 'vuex'
 
 import {
-  findAll
+  findAll,
+  updateUserTagsConfigByUserId
 } from '../../apis/tags'
 import { ITagProps } from '../../interface'
 
@@ -23,6 +24,13 @@ export default {
   mutations: {
     updateTags (state: IState, payload: ITagProps[]) {
       state.data = payload
+    },
+
+    updateTagShowById (state: IState, { id }: ITagProps) {
+      const tag = state.data.find(tag => tag.id === id)
+      if (tag) {
+        tag.show = !tag?.show
+      }
     }
   },
 
@@ -35,6 +43,12 @@ export default {
       if (response.code === 200) {
         commit('updateTags', response.data)
       }
+    },
+
+    async updateUserTagsConfigByUserId (
+      { state }: ActionContext<IState, any>
+    ) {
+      await updateUserTagsConfigByUserId(state.data)
     }
   }
 }

@@ -142,6 +142,12 @@ export default defineComponent({
         password: form.password
       })
 
+      store.commit('user/updatePersonalInformation', {
+        name: form.username,
+        [type.value]: form.phoneOrEmail,
+        password: form.password
+      })
+
       if (response.code === 200) {
         router.push('/verify-all')
       }

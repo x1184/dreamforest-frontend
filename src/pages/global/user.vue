@@ -14,48 +14,43 @@
     </df-header>
 
     <div class="user-container">
-      <df-personal-card></df-personal-card>
+      <df-personal-card
+        type="createTime"
+        :user="user.information"
+      ></df-personal-card>
       <div class="user-icon">
         <div>
           <span>
             <van-icon name="discount" />
           </span>
-          <span>123</span>
+          <span>
+            {{ user.information.times.star}}
+          </span>
         </div>
+
         <div>
           <span>
             <van-icon name="like-o" />
           </span>
-          <span>234</span>
+          <span>
+            {{ user.information.times.like }}
+          </span>
         </div>
+
         <div>
           <span>
             <van-icon name="share-o" />
           </span>
-          <span>345</span>
+          <span>
+            {{ user.information.times.share }}
+          </span>
         </div>
       </div>
+
       <div class="user-content">
         <div class="user-introduce">介绍</div>
         <div class="user-description">
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
-          你真的很好
+          {{ user.information.description }}
         </div>
       </div>
     </div>
@@ -63,8 +58,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { useRouter } from 'vue-router'
+import { defineComponent, reactive, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useStore } from 'vuex'
 
 import DfHeader from '../../layouts/DfHeader.vue'
 import DfPersonalCard from '../../components/DfPersonalCard.vue'
@@ -76,13 +72,36 @@ export default defineComponent({
   },
 
   setup () {
+    const { params } = useRoute()
     const router = useRouter()
+    const store = useStore()
+
+    const user = reactive({
+      information: {
+        description: '',
+        times: {
+          star: 0,
+          like: 0,
+          share: 0
+        }
+      }
+    })
+
+    onMounted(async () => {
+      const response = await store.dispatch('user/findUserInfoByUserId', {
+        id: params.id
+      })
+
+      user.information = response.data
+    })
 
     const handleGoback = () => {
       router.go(-1)
     }
 
     return {
+      user,
+
       handleGoback
     }
   }

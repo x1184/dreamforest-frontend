@@ -1,5 +1,17 @@
 <template>
   <div>
+    <df-header>
+      <template #title>
+        我的关注
+      </template>
+      <template #right>
+        <van-icon
+          name="bars"
+          @click="handleToggleShowPopup"
+        />
+      </template>
+    </df-header>
+
     <van-list
       v-model:loading="lists.loading"
       finished-text="没有更多了"
@@ -17,10 +29,56 @@
         :link="item.link"
         :tags="item.tags"
         :times="item.times"
-        :type="['view', 'like', 'share']"
+        :type="['comment', 'like', 'share']"
       >
       </df-card>
     </van-list>
+
+    <van-popup
+      lock-scroll
+      close-on-popstate
+      position="bottom"
+      v-model:show="showPopup"
+      :style="{ height: '90%' }"
+    >
+      <div class="star-popup-container">
+        <div class="star-popup-title">
+          选择想法
+        </div>
+
+        <van-list
+          v-model:loading="lists.loading"
+          finished-text="没有更多了"
+          :finished="lists.finished"
+          @load="handleLoad"
+        >
+          <df-card
+            v-for="item in ideas"
+            :key="item.id"
+            :id="item.id"
+            :name="item.initiator?.name"
+            :title="item.title"
+            :avatar="item.initiator?.avatar"
+            :createTime="item.createTime"
+            :link="item.link"
+            :tags="item.tags"
+            :times="item.times"
+            :type="['comment', 'like', 'share']"
+          >
+          </df-card>
+        </van-list>
+
+        <div>
+          <van-checkbox>
+            全选
+          </van-checkbox>
+
+          <van-button size="small">
+            取消关注
+          </van-button>
+        </div>
+      </div>
+    </van-popup>
   </div>
 </template>
 
@@ -50,6 +108,7 @@ export default defineComponent({
     // 想法列表
     const ideas = computed(() => store.state.ideas.data)
     const tagId = ref('')
+    const showPopup = ref(false)
     const page = reactive({
       pageIndex: 1,
       pageSize: 10
@@ -70,12 +129,17 @@ export default defineComponent({
 
       page.pageIndex += 1
     }
+    const handleToggleShowPopup = () => {
+      showPopup.value = !showPopup.value
+    }
 
     return {
       ideas,
       lists,
+      showPopup,
 
-      handleLoad
+      handleLoad,
+      handleToggleShowPopup
     }
   }
 })
@@ -113,5 +177,40 @@ export default defineComponent({
 
 .header-tag {
   padding: 5px 10px;
+}
+
+.star-popup-container {
+  position: relative;
+  /* margin: 10px 5px; */
+}
+
+.star-popup-title {
+  z-index: 999;
+  position: sticky;
+  top: 0;
+
+  background-color: #fff;
+}
+
+.star-popup-container div:first-child {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+}
+
+.star-popup-container > div:last-child {
+  position: fixed;
+  bottom: 0;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  padding: 5px 10px;
+  width: 100%;
+
+  font-size: 18px;
+  background-color: #fff;
 }
 </style>

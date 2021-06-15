@@ -1,7 +1,8 @@
 <template>
   <van-form
     validate-trigger="onSubmit"
-    @submit="onSubmit">
+    @submit="onSubmit"
+  >
 
     <van-cell-group title="想法">
       <van-field
@@ -27,7 +28,10 @@
       />
     </van-cell-group>
 
-    <van-cell-group v-if="showProject" title="项目">
+    <van-cell-group
+      v-if="showProject"
+      title="项目"
+    >
       <van-field
         v-model="state.project.title"
         name="projectTitle"
@@ -56,7 +60,8 @@
         round
         block
         type="primary"
-        native-type="submit">
+        native-type="submit"
+      >
         提交
       </van-button>
     </div>
@@ -99,7 +104,6 @@ export default defineComponent({
 
     // TODO 发送请求
     const onSubmit = (value: IFormProps) => {
-      console.log(108, value)
       router.go(-1)
     }
 

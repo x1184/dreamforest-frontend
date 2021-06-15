@@ -39,12 +39,10 @@ import { defineComponent, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
-import { IIdeaProps, IPersonalProps } from '../../interface'
 import DfHeader from '../../layouts/DfHeader.vue'
 import DfCard from '../../components/DfCard.vue'
 
 interface IListProps {
-  data: (IIdeaProps & IPersonalProps)[];
   loading: boolean;
   finished: boolean;
 }

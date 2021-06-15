@@ -9,12 +9,19 @@ import {
   verifyEmailByVerificationCode,
   updatePasswordByPhone,
   updatePasswordByOldPassword,
-  findUserInfoByUserId
+  findUserInfoByUserId,
+  findUserInfoByToken
 } from '../../apis/user'
 import { IPersonalProps } from './../../interface'
 
-const initialState: IPersonalProps = {
-  name: ''
+interface IState {
+  information: IPersonalProps;
+}
+
+const initialState: IState = {
+  information: {
+    name: ''
+  }
 }
 
 export default {
@@ -26,11 +33,11 @@ export default {
 
   mutations: {
     updatePersonalInformation (
-      state: IPersonalProps,
+      state: IState,
       payload: IPersonalProps
     ): void {
-      state = {
-        ...state,
+      state.information = {
+        ...state.information,
         ...payload
       }
     }
@@ -45,7 +52,7 @@ export default {
       const response = await login(payload)
 
       if (response.code === 200) {
-        localStorage.setItem('authorization', response)
+        localStorage.setItem('authorization', response.uuid)
       }
 
       return response
@@ -59,7 +66,7 @@ export default {
       const response = await register(payload)
 
       if (response.code === 200) {
-        localStorage.setItem('authorization', response)
+        localStorage.setItem('authorization', response.uuid)
       }
 
       return response
@@ -67,13 +74,25 @@ export default {
 
     // 通过用户 id 查询用户基本信息
     async findUserInfoByUserId (
+      action: ActionContext<IPersonalProps, any>,
+      payload: any
+    ) {
+      const response = await findUserInfoByUserId(payload)
+
+      return response
+    },
+
+    // 通过用户 token 查询用户基本信息
+    async findUserInfoByToken (
       { commit }: ActionContext<IPersonalProps, any>
     ) {
-      const response = await findUserInfoByUserId()
+      const response = await findUserInfoByToken()
 
-      commit('updatePersonalInformation', {
-        payload: response
-      })
+      if (response.code === 200) {
+        commit('updatePersonalInformation', response.data)
+      }
+
+      return response
     },
 
     // 通过手机号来发送验证码

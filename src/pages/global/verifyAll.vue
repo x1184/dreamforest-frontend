@@ -8,8 +8,9 @@
           @click="handleClosePage"
         />
         <van-button
-          @click="handleClosePage"
           color="#07C160"
+          :disabled="!isStart"
+          @click="handleClosePage"
         >开始使用</van-button>
       </div>
     </van-sticky>
@@ -18,10 +19,13 @@
 
     <div>
       <div @click="handleClickVerifyPhone">
-        <df-verify />
+        <df-verify :checked="isVerify.phone" />
       </div>
-      <div @click="handleClickVerifyPhone">
-        <df-verify content="验证邮箱" />
+      <div @click="handleClickVerifyEmail">
+        <df-verify
+          :checked="isVerify.email"
+          content="验证邮箱"
+        />
       </div>
     </div>
 
@@ -29,8 +33,8 @@
       round
       position="bottom"
       class="forget-password-popup"
-      v-model:show="showDrawer.popUp"
-      @closed="handleCloseVerifyPhone"
+      v-model:show="showPopup.phone"
+      @closed="handleCloseVerify"
     >
       <div class="login-popup-title">
       </div>
@@ -50,9 +54,9 @@
             <van-button
               round
               type="primary"
-              :disabled="timing.disabled"
-              @click="handleCreateCount"
-            >发送验证码（{{ timing.count }}s）</van-button>
+              :disabled="timing.phone"
+              @click="handlePhoneTime"
+            >发送验证码（{{ timing.phoneCount }}s）</van-button>
           </div>
 
           <div class="login-input-group">
@@ -61,13 +65,63 @@
               :mask="false"
               :gutter="10"
               :value="form.verifyValue"
-              :focused="showDrawer.keyboard"
+              :focused="showPopup.keyboard"
               @focus="handleShowKeyboard"
             />
             <van-number-keyboard
               maxlength="6"
               v-model="form.verifyValue"
-              :show="showDrawer.keyboard"
+              :show="showPopup.keyboard"
+              @blur="handleHiddenKeyboard"
+            />
+          </div>
+        </van-form>
+      </div>
+    </van-popup>
+
+    <van-popup
+      round
+      position="bottom"
+      class="forget-password-popup"
+      v-model:show="showPopup.email"
+      @closed="handleCloseVerify"
+    >
+      <div class="login-popup-title">
+      </div>
+
+      <div class="login-popup-container">
+        <van-form validate-trigger="onChange">
+          <van-field
+            type="email"
+            name="email"
+            label="邮箱"
+            placeholder="请输入邮箱"
+            v-model="form.email"
+            @change="handleBlurEmail"
+          />
+
+          <div class="login-popup-button">
+            <van-button
+              round
+              type="primary"
+              :disabled="timing.email"
+              @click="handleEmailTime"
+            >发送验证码（{{ timing.emailCount }}s）</van-button>
+          </div>
+
+          <div class="login-input-group">
+            <van-password-input
+              length="6"
+              :mask="false"
+              :gutter="10"
+              :value="form.verifyValue"
+              :focused="showPopup.keyboard"
+              @focus="handleShowKeyboard"
+            />
+            <van-number-keyboard
+              maxlength="6"
+              v-model="form.verifyValue"
+              :show="showPopup.keyboard"
               @blur="handleHiddenKeyboard"
             />
           </div>
@@ -78,7 +132,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, watch } from 'vue'
+import { defineComponent, reactive, ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
@@ -92,84 +146,120 @@ export default defineComponent({
   },
 
   setup () {
+    let interval: any = null
+
     const router = useRouter()
     const store = useStore()
 
     const height = ref('40%')
     const form = reactive({
-      phone: '',
+      phone: store.state.user.information.phone,
+      email: store.state.user.information.email,
       verifyValue: ''
     })
-    const timing = reactive({
-      disabled: true,
-      count: 60
-    })
-    const showDrawer = reactive({
-      popUp: false,
+    const showPopup = reactive({
+      phone: false,
+      email: false,
       keyboard: false
     })
+    const timing = reactive({
+      phone: !store.state.user.information.phone,
+      email: !store.state.user.information.email,
+      phoneCount: 60,
+      emailCount: 60
+    })
+    // 是否验证邮箱以及手机号
+    const isVerify = reactive({
+      phone: false,
+      email: false
+    })
+    // 是否可以开始使用
+    const isStart = computed(() => isVerify.phone || isVerify.email)
 
-    // 手机号取消聚焦
-    const handleBlurPhone = () => {
-      const phone = /^1[3-9]\d{9}$/.test(form.phone)
-
-      if (phone) {
-        timing.disabled = false
-      } else {
-        Toast({
-          message: '请输入正确的手机号',
-          position: 'bottom'
-        })
+    // 打开手机验证弹窗
+    const handleClickVerifyPhone = () => {
+      if (!isVerify.phone) {
+        showPopup.phone = true
       }
     }
-    // 打开验证弹窗
-    const handleClickVerifyPhone = () => {
-      showDrawer.popUp = true
+    // 打开邮箱验证弹窗
+    const handleClickVerifyEmail = () => {
+      if (!isVerify.email) {
+        showPopup.email = true
+      }
     }
     /**
      * 关闭验证弹窗
      * 1. 删除验证码显示
      */
-    const handleCloseVerifyPhone = () => {
+    const handleCloseVerify = () => {
       form.verifyValue = ''
+
+      showPopup.email = false
+      showPopup.phone = false
     }
     // 显示键盘
     const handleShowKeyboard = async () => {
-      const phone = /^1[3-9]\d{9}$/.test(form.phone)
+      const isPhone = /^1[3-9]\d{9}$/.test(form.phone)
+      const isEmail = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(form.email)
 
-      if (phone) {
-        showDrawer.keyboard = true
+      if (isPhone || isEmail) {
+        showPopup.keyboard = true
         height.value = '80%'
       } else {
         Toast({
-          message: '请输入正确的手机号',
+          message: '请输入正确',
           position: 'bottom'
         })
       }
     }
     // 隐藏键盘
     const handleHiddenKeyboard = () => {
-      showDrawer.keyboard = false
+      showPopup.keyboard = false
       setTimeout(() => {
         height.value = '45%'
       }, 300)
     }
+
     // 创建一个定时器
-    const handleCreateCount = () => {
-      timing.disabled = true
-      const response = store.dispatch('user/sendVerificationCodeByPhone')
+    const handlePhoneTime = async () => {
+      timing.phone = true
+      let response = null
+      response = await store.dispatch('user/sendVerificationCodeByPhone')
 
       if (response.code === 200) {
-        const interval = setInterval(() => {
-          timing.count -= 1
+        interval = setInterval(() => {
+          timing.phoneCount -= 1
 
-          if (timing.count <= 0) {
+          if (timing.phoneCount <= 0) {
             clearInterval(interval)
 
-            timing.disabled = false
-            timing.count = 60
+            timing.phone = false
+            timing.phoneCount = 60
           }
         }, 1000)
+      } else {
+        timing.phone = false
+      }
+    }
+    const handleEmailTime = async () => {
+      timing.email = true
+      let response = null
+      response = await store.dispatch('user/sendVerificationCodeByEmail')
+
+      if (response.code === 200) {
+        interval = setInterval(() => {
+          timing.emailCount -= 1
+
+          if (timing.emailCount <= 0) {
+            clearInterval(interval)
+
+            timing.email = false
+            timing.emailCount = 60
+          }
+        }, 1000)
+      } else {
+        timing.email = false
       }
     }
     // 关闭此页面
@@ -177,37 +267,89 @@ export default defineComponent({
       router.replace('/')
     }
 
+    // 手机取消聚焦
+    const handleBlurPhone = () => {
+      const isPhone = /^1[3-9]\d{9}$/.test(form.phone)
+
+      if (isPhone) {
+        timing.phone = false
+      } else {
+        Toast({
+          message: '请输入正确的手机号',
+          position: 'bottom'
+        })
+      }
+    }
+
+    // 邮箱取消聚焦
+    const handleBlurEmail = () => {
+      const isEmail = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(form.email)
+
+      if (isEmail) {
+        timing.email = false
+      } else {
+        Toast({
+          message: '请输入正确的邮箱',
+          position: 'bottom'
+        })
+      }
+    }
+
     // watch
     // =======================================
     watch(form, async (newValue) => {
       if (newValue.verifyValue.length === 6) {
-        const response = await store.dispatch(
-          'user/verifyPhoneByVerificationCode', {
-            verification_code: newValue.verifyValue
-          }
-        )
+        if (showPopup.phone) {
+          const response = await store.dispatch(
+            'user/verifyPhoneByVerificationCode', {
+              verification_code: newValue.verifyValue
+            }
+          )
 
-        // 1. 关闭键盘
-        // 2. 关闭忘记密码弹窗
-        if (response.code === 200) {
-          handleHiddenKeyboard()
-          handleCloseVerifyPhone()
+          // 1. 关闭键盘
+          // 2. 关闭忘记密码弹窗
+          if (response.code === 200) {
+            handleHiddenKeyboard()
+            handleCloseVerify()
+            isVerify.phone = true
+            clearInterval(interval)
+          }
+        } else {
+          const response = await store.dispatch(
+            'user/verifyEmailByVerificationCode', {
+              verification_code: newValue.verifyValue
+            }
+          )
+
+          // 1. 关闭键盘
+          // 2. 关闭忘记密码弹窗
+          if (response.code === 200) {
+            handleHiddenKeyboard()
+            handleCloseVerify()
+            isVerify.email = true
+            clearInterval(interval)
+          }
         }
       }
     })
 
     return {
       form,
+      isStart,
       timing,
       height,
-      showDrawer,
+      showPopup,
+      isVerify,
 
       handleBlurPhone,
+      handleBlurEmail,
       handleClickVerifyPhone,
-      handleCreateCount,
+      handleClickVerifyEmail,
+      handlePhoneTime,
+      handleEmailTime,
       handleShowKeyboard,
       handleHiddenKeyboard,
-      handleCloseVerifyPhone,
+      handleCloseVerify,
       handleClosePage
     }
   }
