@@ -2,13 +2,14 @@
   <div>
     <df-header></df-header>
     <df-personal-card></df-personal-card>
+
     <van-cell-group>
       <van-cell
         center
         clickable
         is-link
         value="个人信息"
-        @click="handleCellClick('/personal')"
+        @click="handleCellClick('/mine')"
       />
       <van-cell
         center
@@ -46,12 +47,7 @@ export default defineComponent({
   setup () {
     const router = useRouter()
 
-    const mine = reactive({
-      id: '7',
-      name: 'Jobs',
-      createTime: '2021/06/06 21:21',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscingIdea:Lorem ipsum dolor sit amet, consectetur adipiscing'
-    })
+    const mine = reactive({})
 
     const handleCellClick = (path: string) => {
       router.push(path)

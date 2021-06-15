@@ -142,7 +142,7 @@ export default defineComponent({
     }
 
     const handleClick = () => {
-      router.push(`/detail/${id}`)
+      router.push(`/idea/${id}`)
     }
 
     return {

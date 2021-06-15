@@ -5,14 +5,16 @@
     placeholder
     safe-area-inset-bottom
     v-model="active"
-    @change="handleChange">
+    @change="handleChange"
+  >
     <van-tabbar-item
       replace
       v-for="item of tabbar"
       :key="item.name"
       :name="item.name"
       :icon="item.icon"
-      :to="item.path">
+      :to="item.path"
+    >
       {{item.label}}
     </van-tabbar-item>
   </van-tabbar>
@@ -43,7 +45,7 @@ export default defineComponent({
     }, {
       name: 'Mine',
       label: '我的',
-      path: '/mine'
+      path: '/personal'
     }])
 
     // TODO jump to router

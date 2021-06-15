@@ -67,9 +67,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { defineComponent, reactive, ref, watch } from 'vue'
 import { Toast } from 'vant'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 import DfVerify from '../../components/DfVerify.vue'
 
@@ -78,8 +79,10 @@ export default defineComponent({
     [DfVerify.name]: DfVerify
   },
 
-  setup () {
+  setup  () {
     const router = useRouter()
+    const store = useStore()
+
     const height = ref('40%')
     const form = reactive({
       phone: '',
@@ -137,8 +140,13 @@ export default defineComponent({
       }, 300)
     }
     // 创建一个定时器
-    const handleCreateCount = () => {
+    const handleCreateCount = async () => {
       timing.disabled = true
+
+      await store.dispatch('user/sendVerificationCodeByPhone', {
+        phone: form.phone
+      })
+
       const interval = setInterval(() => {
         timing.count -= 1
 
@@ -154,6 +162,27 @@ export default defineComponent({
     const handleClosePage = () => {
       router.replace('/')
     }
+
+    // watch
+    // =========================
+    watch(form, async (newValue) => {
+      if (newValue.verifyValue.length === 6) {
+        const response = await store.dispatch(
+          'user/verifyPhoneByVerificationCode', {
+            verification_code: newValue.verifyValue
+          }
+        )
+
+        // 1. 关闭键盘
+        // 2. 关闭忘记密码弹窗
+        if (response.code === 200) {
+          handleHiddenKeyboard()
+          handleCloseVerifyPhone()
+
+          router.push('/')
+        }
+      }
+    })
 
     return {
       form,

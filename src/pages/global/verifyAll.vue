@@ -78,9 +78,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
-import { Toast } from 'vant'
+import { defineComponent, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+
+import { Toast } from 'vant'
 
 import DfVerify from '../../components/DfVerify.vue'
 
@@ -91,6 +93,8 @@ export default defineComponent({
 
   setup () {
     const router = useRouter()
+    const store = useStore()
+
     const height = ref('40%')
     const form = reactive({
       phone: '',
@@ -153,21 +157,44 @@ export default defineComponent({
     // 创建一个定时器
     const handleCreateCount = () => {
       timing.disabled = true
-      const interval = setInterval(() => {
-        timing.count -= 1
+      const response = store.dispatch('user/sendVerificationCodeByPhone')
 
-        if (timing.count <= 0) {
-          clearInterval(interval)
+      if (response.code === 200) {
+        const interval = setInterval(() => {
+          timing.count -= 1
 
-          timing.disabled = false
-          timing.count = 60
-        }
-      }, 1000)
+          if (timing.count <= 0) {
+            clearInterval(interval)
+
+            timing.disabled = false
+            timing.count = 60
+          }
+        }, 1000)
+      }
     }
     // 关闭此页面
     const handleClosePage = () => {
       router.replace('/')
     }
+
+    // watch
+    // =======================================
+    watch(form, async (newValue) => {
+      if (newValue.verifyValue.length === 6) {
+        const response = await store.dispatch(
+          'user/verifyPhoneByVerificationCode', {
+            verification_code: newValue.verifyValue
+          }
+        )
+
+        // 1. 关闭键盘
+        // 2. 关闭忘记密码弹窗
+        if (response.code === 200) {
+          handleHiddenKeyboard()
+          handleCloseVerifyPhone()
+        }
+      }
+    })
 
     return {
       form,
