@@ -202,7 +202,7 @@ export default defineComponent({
       }
 
       const response = await store.dispatch('user/login', {
-        username: form.username,
+        phone: form.username,
         password: form.password
       })
 

@@ -14,16 +14,20 @@
     </df-header>
 
     <div>
-      <div>
-        <label for="avatar_uploader">
-          点击上传头像
-        </label>
-        <input
-          id="avatar_uploader"
-          name="avatar_uploader"
-          type="file"
-          accept="image/*;"
+      <div class="avatar-uploader">
+        <van-uploader
+          :max-count="1"
+          v-model="form.avatar"
         >
+          <div>
+            点击上传头像
+          </div>
+
+          <template #preview-cover="">
+            <div class="preview-cover van-ellipsis">
+            </div>
+          </template>
+        </van-uploader>
       </div>
 
       <van-cell
@@ -52,7 +56,7 @@
     </div>
 
     <div class="modify-footer-save">
-      <van-button>
+      <van-button @click="handleModify">
         保存
       </van-button>
     </div>
@@ -79,7 +83,8 @@ export default defineComponent({
 
     const user = computed(() => store.state.user.information)
     const form = reactive({
-      user: '',
+      avatar: [],
+      name: '',
       description: ''
     })
 
@@ -88,7 +93,15 @@ export default defineComponent({
     }
 
     const handleModify = () => {
-      router.push('/modify')
+      if (!form.name) {
+        form.name = store.state.user.information.name
+      }
+
+      if (!form.description) {
+        form.description = store.state.user.information.description
+      }
+
+      console.log(105, store.state.user.information)
     }
 
     return {
@@ -116,5 +129,17 @@ export default defineComponent({
   align-items: center;
 
   width: 100%;
+}
+
+.avatar-uploader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin: 20px;
+  padding: 10px 20px;
+
+  border: 1px dashed #ccc;
+  font-size: 20px;
 }
 </style>

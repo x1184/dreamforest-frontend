@@ -37,3 +37,21 @@ export async function findIdeaByTagId (data: any) {
     data
   })
 }
+
+// 通过用户id查询用户关注的想法(分页)
+export async function findAttentionIdeaByUserId (data: any) {
+  return request({
+    method: 'post',
+    url: `/${MODULE}/findAttentionIdeaByUserId`,
+    data
+  })
+}
+
+// 通过用户id查询用户点赞的想法(分页)
+export async function findLikeIdeaByUserId (data: any) {
+  return request({
+    method: 'post',
+    url: `/${MODULE}/findLikeIdeaByUserId`,
+    data
+  })
+}

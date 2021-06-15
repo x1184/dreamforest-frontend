@@ -138,7 +138,7 @@ export default defineComponent({
       if (!validate()) return null
       const response = await store.dispatch('user/register', {
         name: form.username,
-        [type.value]: form.phoneOrEmail,
+        phone: form.phoneOrEmail,
         password: form.password
       })
 

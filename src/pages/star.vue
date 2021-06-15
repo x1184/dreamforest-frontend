@@ -107,7 +107,7 @@ export default defineComponent({
 
     // 想法列表
     const ideas = computed(() => store.state.ideas.data)
-    const tagId = ref('')
+    const total = computed(() => store.state.ideas.total)
     const showPopup = ref(false)
     const page = reactive({
       pageIndex: 1,
@@ -122,10 +122,13 @@ export default defineComponent({
     // 加载效果
     const handleLoad = () => {
       lists.loading = false
-      store.dispatch('ideas/findIdeaByTagId', {
-        id: tagId,
+      store.dispatch('ideas/findAttentionIdeaByUserId', {
         ...page
       })
+
+      if (ideas.length >= total) {
+        lists.finished = true
+      }
 
       page.pageIndex += 1
     }

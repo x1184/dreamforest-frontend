@@ -2,7 +2,9 @@ import { ActionContext } from 'vuex'
 
 import {
   getAllIdea,
-  findIdeaByTagId
+  findIdeaByTagId,
+  findLikeIdeaByUserId,
+  findAttentionIdeaByUserId
 } from '../../apis/ideas'
 import { IIdeaProps } from '../../interface'
 
@@ -64,6 +66,40 @@ export default {
       payload: any
     ) {
       const response = await findIdeaByTagId(payload)
+
+      if (response.code === 200) {
+        if (payload.pageIndex === 1) {
+          commit('updateIdeas', response.data.ideas)
+          commit('updateTotal', response.data.total)
+        } else {
+          commit('addIdeas', response.data.ideas)
+          commit('updateTotal', response.data.total)
+        }
+      }
+    },
+
+    async findLikeIdeaByUserId (
+      { commit }: ActionContext<IIdeaProps, any>,
+      payload: any
+    ) {
+      const response = await findLikeIdeaByUserId(payload)
+
+      if (response.code === 200) {
+        if (payload.pageIndex === 1) {
+          commit('updateIdeas', response.data.ideas)
+          commit('updateTotal', response.data.total)
+        } else {
+          commit('addIdeas', response.data.ideas)
+          commit('updateTotal', response.data.total)
+        }
+      }
+    },
+
+    async findAttentionIdeaByUserId (
+      { commit }: ActionContext<IIdeaProps, any>,
+      payload: any
+    ) {
+      const response = await findAttentionIdeaByUserId(payload)
 
       if (response.code === 200) {
         if (payload.pageIndex === 1) {

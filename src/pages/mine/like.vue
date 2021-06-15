@@ -1,15 +1,15 @@
 <template>
   <div>
     <df-header>
-      <template #title>
-        我的点赞
-      </template>
-
       <template #left>
         <van-icon
           name="arrow-left"
           @click="handleGoback"
         />
+      </template>
+
+      <template #title>
+        我的点赞
       </template>
     </df-header>
 
@@ -23,11 +23,14 @@
         v-for="item in ideas"
         :key="item.id"
         :id="item.id"
-        :name="item.name"
+        :name="item.initiator?.name"
         :title="item.title"
-        :avatar="item.avatar"
+        :avatar="item.initiator?.avatar"
         :createTime="item.createTime"
         :link="item.link"
+        :tags="item.tags"
+        :times="item.times"
+        :type="['view', 'like', 'share']"
       >
       </df-card>
     </van-list>
@@ -35,9 +38,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { defineComponent, reactive, ref, computed } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 
 import DfHeader from '../../layouts/DfHeader.vue'
 import DfCard from '../../components/DfCard.vue'
@@ -56,42 +59,48 @@ export default defineComponent({
   },
 
   setup () {
-    const router = useRouter()
     const store = useStore()
+    const router = useRouter()
 
+    // 想法列表
     const ideas = computed(() => store.state.ideas.data)
-    // 列表
-    const lists = reactive<IListProps>({
-      loading: false,
-      finished: false
-    })
-    // 分页参数
+    const tagId = ref('')
+    const showPopup = ref(false)
     const page = reactive({
       pageIndex: 1,
       pageSize: 10
     })
-
-    // 后退
-    const handleGoback = () => {
-      router.go(-1)
-    }
+    // idea 列表
+    const lists = reactive<IListProps>({
+      loading: false,
+      finished: false
+    })
 
     // 加载效果
     const handleLoad = () => {
       lists.loading = false
-      store.dispatch('ideas/getAllIdea', {
+      store.dispatch('ideas/findLikeIdeaByUserId', {
+        id: tagId,
         ...page
       })
 
       page.pageIndex += 1
     }
+    const handleToggleShowPopup = () => {
+      showPopup.value = !showPopup.value
+    }
+    const handleGoback = () => {
+      router.go(-1)
+    }
 
     return {
-      lists,
       ideas,
+      lists,
+      showPopup,
 
+      handleLoad,
       handleGoback,
-      handleLoad
+      handleToggleShowPopup
     }
   }
 })
@@ -129,5 +138,40 @@ export default defineComponent({
 
 .header-tag {
   padding: 5px 10px;
+}
+
+.star-popup-container {
+  position: relative;
+  /* margin: 10px 5px; */
+}
+
+.star-popup-title {
+  z-index: 999;
+  position: sticky;
+  top: 0;
+
+  background-color: #fff;
+}
+
+.star-popup-container div:first-child {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+}
+
+.star-popup-container > div:last-child {
+  position: fixed;
+  bottom: 0;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  padding: 5px 10px;
+  width: 100%;
+
+  font-size: 18px;
+  background-color: #fff;
 }
 </style>

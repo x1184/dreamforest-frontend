@@ -103,3 +103,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+.van-cell__value {
+  flex: 2;
+}
+</style>

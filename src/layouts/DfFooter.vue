@@ -50,7 +50,6 @@ export default defineComponent({
 
     // TODO jump to router
     const handleChange = (index: string) => {
-      console.log(51, 'df-footer', active)
     }
 
     return {
