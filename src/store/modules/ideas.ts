@@ -4,6 +4,7 @@ import {
   addNewIdea,
   getAllIdea,
   findIdeaByTagId,
+  getIdeaDetailById,
   findLikeIdeaByUserId,
   findAttentionIdeaByUserId
 } from '../../apis/ideas'
@@ -58,9 +59,16 @@ export default {
       }
     },
 
-    getIIdeaDetailById (
-      actions: ActionContext<IIdeaProps, any>
-    ) { },
+    async getIdeaDetailById (
+      actions: ActionContext<IIdeaProps, any>,
+      payload: any
+    ) {
+      const response = await getIdeaDetailById(payload)
+
+      if (response.code === 200) {
+        return response.data
+      }
+    },
 
     async findIdeaByTagId (
       { commit }: ActionContext<IIdeaProps, any>,

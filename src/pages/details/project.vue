@@ -12,43 +12,17 @@
     <div class="details-container">
       <div>
         <div class="details-title">项目标题</div>
-        <div>我想打造一个关于梦想想法创意交流的社区</div>
+        <div>
+          {{ project.information.title }}
+        </div>
       </div>
       <div>
         <div class="details-title">项目内容</div>
         <div class="details-content">
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
+          {{ project.information.content }}
         </div>
         <div class="details-create-time">
-          创建于 2021/06/06 21:21
+          创建于 {{ project.information.createTime }}
         </div>
       </div>
     </div>
@@ -56,11 +30,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, onMounted } from 'vue'
+import { defineComponent, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 
+import { IProjectProps } from '../../interface'
+
 import DfHeader from '../../layouts/DfHeader.vue'
+
+interface IProjectInformationProps {
+  information: IProjectProps;
+}
 
 export default defineComponent({
   components: {
@@ -68,11 +48,14 @@ export default defineComponent({
   },
 
   setup () {
-    const router = useRouter()
     const { params } = useRoute()
+    const router = useRouter()
+
     const store = useStore()
 
-    const projectDetail = computed(() => store.state.project)
+    const project = reactive<IProjectInformationProps>({
+      information: {}
+    })
 
     // onMounted
     onMounted(() => {
@@ -86,7 +69,7 @@ export default defineComponent({
     }
 
     return {
-      projectDetail,
+      project,
 
       handleGoback
     }

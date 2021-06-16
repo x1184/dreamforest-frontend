@@ -16,57 +16,29 @@
     <div class="details-container">
       <div>
         <div class="details-title">想法标题</div>
-        <div>我想打造一个关于梦想想法创意交流的社区</div>
+        <div>{{ idea.information.title }}</div>
       </div>
       <div>
         <div class="details-title">想法内容</div>
         <div class="details-content">
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
-          我想打造一个关于梦想想法创意交流的社区
+          {{ idea.information.content }}
         </div>
       </div>
       <div>
         <div class="details-title">
           <span>发起人</span>
-          <span class="details-create-time">发布于 2021/06/06 21:21</span>
+          <span class="details-create-time">发布于 {{ idea.information.createTime }}</span>
         </div>
         <div class="details-initiator">
           <div>
             <img
-              src="https://img.yzcdn.cn/vant/ipad.jpeg"
+              :src="idea.information.initiator?.avatar"
               alt="avatar"
             >
           </div>
           <div>
-            <div>马云</div>
-            <div>ID: 123123</div>
+            <div>{{ idea.information.initiator?.name }}</div>
+            <div>ID: {{ idea.information.initiator?.showId }}</div>
           </div>
         </div>
       </div>
@@ -77,21 +49,25 @@
             <span>
               <van-icon name="discount" />
             </span>
-            <span>123</span>
+            <span>
+              {{ idea.information.times?.view }}
+            </span>
           </div>
           <div>
             <span>
               <van-icon name="like-o" />
             </span>
             <span>
-              234
+              {{ idea.information.times?.like }}
             </span>
           </div>
           <div>
             <span>
               <van-icon name="share-o" />
             </span>
-            <span>345</span>
+            <span>
+              {{ idea.information.times?.share }}
+            </span>
           </div>
         </div>
       </div>
@@ -102,9 +78,11 @@
             plain
             round
             type="primary"
+            v-for="tag of idea.information.tags"
+            :key="tag.id"
           >
             <span class="header-tag">
-              标签
+              {{ tag.title }}
             </span>
           </van-tag>
         </div>
@@ -124,19 +102,10 @@
       </div>
       <div>
         <div class="details-title">关联项目</div>
-        <div class="details-project">
-          <div>
-            梦想森林 -- 逐梦自己的社区
-          </div>
-        </div>
-
-        <div class="details-project">
-          <div>
-            梦想森林 -- 逐梦自己的社区
-          </div>
-        </div>
-
-        <div class="details-project">
+        <div
+          class="details-project"
+          @click="handleGoProjectDetail('1')"
+        >
           <div>
             梦想森林 -- 逐梦自己的社区
           </div>
@@ -216,10 +185,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+
+import { IIdeaProps } from '../../interface'
 
 import DfHeader from '../../layouts/DfHeader.vue'
+
+interface IIdeaInformationProps {
+  information: IIdeaProps;
+}
 
 export default defineComponent({
   components: {
@@ -227,22 +203,42 @@ export default defineComponent({
   },
 
   setup () {
-    const router = useRouter()
     const { params } = useRoute()
+    const router = useRouter()
+    const store = useStore()
+
     const showPopup = ref(false)
+    const idea = reactive<IIdeaInformationProps>({
+      information: {
+        title: '',
+        content: ''
+      }
+    })
+
+    onMounted(async () => {
+      const response = await store.dispatch('ideas/getIdeaDetailById', {
+        id: params.id
+      })
+
+      idea.information = response
+    })
 
     const handleGoback = () => {
       router.go(-1)
+    }
+    const handleGoProjectDetail = (id: string) => {
+      router.push(`/project/${id}`)
     }
     const handleToggleShowPopup = () => {
       showPopup.value = !showPopup.value
     }
 
     return {
-      id: params.id,
+      idea,
       showPopup,
 
       handleGoback,
+      handleGoProjectDetail,
       handleToggleShowPopup
     }
   }

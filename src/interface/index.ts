@@ -39,11 +39,13 @@ export interface IIdeaProps {
   isLike?: boolean;
   isStar?: boolean;
   link?: string;
+  initiator?: IPersonalProps;
   times?: {
     view?: number;
     like?: number;
     star?: number;
     comment?: number;
+    share?: number;
   };
   private?: {
     type?: string,
@@ -58,4 +60,7 @@ export interface IIdeaProps {
 
 export interface IProjectProps {
   id?: string;
+  title: string;
+  content: string;
+  createTime?: string;
 }

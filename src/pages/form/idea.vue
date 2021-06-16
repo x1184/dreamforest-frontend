@@ -73,7 +73,13 @@ export default defineComponent({
       }
 
       store.dispatch('ideas/addNewIdea', {
-        idea: form
+        idea: {
+          ...form,
+          plan: {
+            startTime: form.plan[0],
+            endTime: form.plan[1]
+          }
+        }
       })
     }
 

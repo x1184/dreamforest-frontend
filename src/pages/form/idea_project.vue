@@ -93,7 +93,13 @@ export default defineComponent({
       }
 
       store.dispatch('projects/addProject', {
-        idea: ideaForm,
+        idea: {
+          ...ideaForm,
+          plan: {
+            startTime: ideaForm.plan[0],
+            endTime: ideaForm.plan[1]
+          }
+        },
         project: projectForm
       })
     }
