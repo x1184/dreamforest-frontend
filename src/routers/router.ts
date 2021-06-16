@@ -1,5 +1,4 @@
 import Home from '../App.vue'
-import Form from '../pages/form.vue'
 import Footer from '../layouts/DfFooter.vue'
 
 export default [
@@ -36,8 +35,16 @@ export default [
     component: () => import('../pages/global/register.vue')
   },
   {
-    path: '/form/:type',
-    component: Form
+    path: '/form/idea',
+    component: () => import('../pages/form/idea.vue')
+  },
+  {
+    path: '/form/project/:id',
+    component: () => import('../pages/form/project.vue')
+  },
+  {
+    path: '/form/idea-project',
+    component: () => import('../pages/form/idea_project.vue')
   },
   {
     path: '/idea/:id',

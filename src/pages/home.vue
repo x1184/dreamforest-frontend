@@ -69,12 +69,14 @@
       <span class="idea">
         <van-button
           round
+          class="idea-btn"
           @click="handleClickFloatButtonItem('idea')"
         >
           <van-icon name="gem-o" />
         </van-button>
         <van-button
           round
+          class="project-btn"
           @click="handleClickFloatButtonItem('project')"
         >
           <van-icon name="gift-o" />
@@ -180,16 +182,6 @@
         </div>
 
         <div class="tags-container">
-          <!-- <van-checkbox
-            v-for="(tag, index) of tags"
-            v-model="checked[index]"
-            :key="tag.id"
-            :name="tag.id"
-            @click.stop
-          >
-            {{ tag.title }}
-          </van-checkbox> -->
-
           <van-checkbox-group v-model="checked">
             <van-cell-group>
               <van-cell
@@ -436,6 +428,17 @@ export default defineComponent({
 .idea {
   display: v-bind(display);
   font-size: 20px;
+}
+
+.idea .idea-btn {
+  position: relative;
+  left: 50px;
+}
+
+.idea .project-btn {
+  position: relative;
+  top: -70px;
+  left: 60px;
 }
 
 .van-nav-bar__title {

@@ -1,6 +1,7 @@
 import { ActionContext } from 'vuex'
 
 import {
+  addProject,
   findProjectDetailByProjectId
 } from '../../apis/projects'
 import { IProjectProps } from '../../interface'
@@ -31,6 +32,14 @@ export default {
       if (response.code === 200) {
         commit('updateProject', response.data)
       }
+    },
+
+    // 添加项目
+    addProject (
+      action: ActionContext<IProjectProps, any>,
+      payload: any
+    ) {
+      addProject(payload)
     }
   }
 }

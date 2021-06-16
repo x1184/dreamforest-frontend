@@ -1,6 +1,7 @@
 import { ActionContext } from 'vuex'
 
 import {
+  addNewIdea,
   getAllIdea,
   findIdeaByTagId,
   findLikeIdeaByUserId,
@@ -110,6 +111,13 @@ export default {
           commit('updateTotal', response.data.total)
         }
       }
+    },
+
+    addNewIdea (
+      action: ActionContext<IIdeaProps, any>,
+      payload: any
+    ) {
+      addNewIdea(payload)
     }
   }
 }
