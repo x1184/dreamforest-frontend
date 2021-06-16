@@ -1,6 +1,6 @@
 <template>
   <div>
-    <df-header></df-header>
+    <!-- <df-header></df-header> -->
     <df-personal-card
       :user="user"
       type="createTime"

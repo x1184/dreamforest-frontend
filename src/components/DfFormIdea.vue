@@ -144,7 +144,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, computed, onBeforeUpdate } from 'vue'
+import { defineComponent, reactive, ref, computed, onBeforeUpdate, onMounted } from 'vue'
 import { useStore } from 'vuex'
 
 import { ITagProps } from '../interface'
@@ -206,6 +206,11 @@ export default defineComponent({
 
     onBeforeUpdate(() => {
       checkboxRefs.value = []
+    })
+    onMounted(() => {
+      if (!allTags.value.length) {
+        store.dispatch('tags/findAll')
+      }
     })
 
     // 显示弹窗

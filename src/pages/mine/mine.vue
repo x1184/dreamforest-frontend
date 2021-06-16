@@ -68,9 +68,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+
+import { IPersonalProps } from '../../interface'
 
 import DfHeader from '../../layouts/DfHeader.vue'
 import DfPersonalCard from '../../components/DfPersonalCard.vue'
@@ -85,7 +87,13 @@ export default defineComponent({
     const router = useRouter()
     const store = useStore()
 
-    const user = computed(() => store.state.user.information)
+    const user = computed<IPersonalProps>(() => store.state.user.information)
+
+    onMounted(() => {
+      if (!user.value.id) {
+        store.dispatch('user/findUserInfoByToken')
+      }
+    })
 
     const handleGoback = () => {
       router.go(-1)

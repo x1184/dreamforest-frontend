@@ -43,8 +43,6 @@ export default {
           }
         }
       }
-
-      console.log(47, state.data)
     }
   },
 

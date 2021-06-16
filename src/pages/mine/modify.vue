@@ -64,7 +64,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, reactive } from 'vue'
+import { defineComponent, computed, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
@@ -86,6 +86,12 @@ export default defineComponent({
       avatar: [],
       name: '',
       description: ''
+    })
+
+    onMounted(() => {
+      if (!user.value.id) {
+        store.dispatch('user/findUserInfoByToken')
+      }
     })
 
     const handleGoback = () => {
