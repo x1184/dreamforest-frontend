@@ -87,30 +87,34 @@
           </van-tag>
         </div>
       </div>
+
       <div>
         <div class="details-title">状态</div>
         <div class="details-status">
-          <div>12</div>
+          <div>{{ idea.information.plan?.startTime }}</div>
           <div>
             <van-icon name="arrow-left" />
           </div>
           <div>
             <van-icon name="arrow" />
           </div>
-          <div>14</div>
+          <div>{{ idea.information.plan?.endTime }}</div>
         </div>
       </div>
+
       <div>
         <div class="details-title">关联项目</div>
         <div
           class="details-project"
           @click="handleGoProjectDetail('1')"
         >
+          <!-- TODO -->
           <div>
             梦想森林 -- 逐梦自己的社区
           </div>
         </div>
       </div>
+
       <div>
         <div>
           <van-button
@@ -118,6 +122,7 @@
             plain
             hairline
             color="#00000082"
+            @click="handleGoAddProject"
           >
             关联项目
           </van-button>
@@ -229,6 +234,9 @@ export default defineComponent({
     const handleGoProjectDetail = (id: string) => {
       router.push(`/project/${id}`)
     }
+    const handleGoAddProject = () => {
+      router.push('/form/project')
+    }
     const handleToggleShowPopup = () => {
       showPopup.value = !showPopup.value
     }
@@ -239,7 +247,8 @@ export default defineComponent({
 
       handleGoback,
       handleGoProjectDetail,
-      handleToggleShowPopup
+      handleToggleShowPopup,
+      handleGoAddProject
     }
   }
 })

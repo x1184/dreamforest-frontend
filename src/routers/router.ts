@@ -39,7 +39,7 @@ export default [
     component: () => import('../pages/form/idea.vue')
   },
   {
-    path: '/form/project/:id',
+    path: '/form/project/',
     component: () => import('../pages/form/project.vue')
   },
   {
