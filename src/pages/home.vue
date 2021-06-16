@@ -148,7 +148,7 @@
         <div class="pop-fix-button">
           <van-button
             type="danger"
-            @click="handleHideAllTags"
+            @click="handleShowAddTags"
           >
             新增
           </van-button>
@@ -170,16 +170,53 @@
       safe-area-inset-bottom
       position="bottom"
       :style="{ height: '50%' }"
+      v-model:show="showAddTags"
     >
-      <div>
-        新增标签
+      <div class="tags-select-container">
+        <div>
+          <van-button @click="handleClickComplete">
+            选好了
+          </van-button>
+        </div>
+
+        <div class="tags-container">
+          <!-- <van-checkbox
+            v-for="(tag, index) of tags"
+            v-model="checked[index]"
+            :key="tag.id"
+            :name="tag.id"
+            @click.stop
+          >
+            {{ tag.title }}
+          </van-checkbox> -->
+
+          <van-checkbox-group v-model="checked">
+            <van-cell-group>
+              <van-cell
+                v-for="(tag, index) of tags"
+                clickable
+                :key="tag.id"
+                :title="tag.title"
+                @click="handleTagToggle(index)"
+              >
+                <template #right-icon>
+                  <van-checkbox
+                    :name="tag.id"
+                    :ref="el => checkboxRefs[index] = el"
+                    @click.stop
+                  />
+                </template>
+              </van-cell>
+            </van-cell-group>
+          </van-checkbox-group>
+        </div>
       </div>
     </van-popup>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, computed, onMounted } from 'vue'
+import { defineComponent, reactive, ref, computed, onMounted, onBeforeUpdate } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
@@ -216,8 +253,12 @@ export default defineComponent({
     const display = ref('none')
     // 是否显示遮罩层
     const showAllTags = ref(false)
+    const showAddTags = ref(false)
     const allSelected = ref(true)
     const tagSelected = reactive((new Array(tags.value.length)).fill(false))
+    // 标签的列表选择
+    const checked = ref<Array<string | undefined>>([])
+    const checkboxRefs = ref<Element[]>([])
     const tagId = ref('')
     const page = reactive({
       pageIndex: 1,
@@ -229,8 +270,17 @@ export default defineComponent({
       finished: false
     })
 
-    onMounted(() => {
-      store.dispatch('tags/findAll')
+    onMounted(async () => {
+      await store.dispatch('tags/findAll')
+      for (const tag of tags.value) {
+        if (tag.show) {
+          checked.value.push(tag.id)
+        }
+      }
+    })
+
+    onBeforeUpdate(() => {
+      checkboxRefs.value = []
     })
 
     // 加载效果
@@ -255,7 +305,6 @@ export default defineComponent({
         page.pageIndex += 1
       }
     }
-
     // 点击事件
     // ===================================
     // 显示悬浮按钮
@@ -276,6 +325,18 @@ export default defineComponent({
     const handleSaveAllTags = () => {
       store.dispatch('tags/updateUserTagsConfigByUserId')
       handleHideAllTags()
+    }
+    // 更改标签的选择
+    const handleTagToggle = (index: number) => {
+      checkboxRefs.value[index].toggle()
+    }
+    // 显示弹窗
+    const handleShowAddTags = () => {
+      showAddTags.value = true
+    }
+    // 隐藏弹窗
+    const handleHideAddTags = () => {
+      showAddTags.value = false
     }
     // 点击某个标签
     const handleClickTagItem = (index: number, id: string) => {
@@ -312,6 +373,11 @@ export default defineComponent({
         ...page
       })
     }
+    // 点击选好了
+    const handleClickComplete = () => {
+      store.commit('tags/updateTagsOption', checked.value)
+      handleHideAddTags()
+    }
 
     // 遮罩层的标签
     const handleClickOverlayTagItem = (id: string) => {
@@ -330,6 +396,9 @@ export default defineComponent({
       allSelected,
       tagSelected,
       showAllTags,
+      showAddTags,
+      checked,
+      checkboxRefs,
 
       handleLoad,
       handleShow,
@@ -338,8 +407,12 @@ export default defineComponent({
       handleShowAllTags,
       handleHideAllTags,
       handleSaveAllTags,
+      handleShowAddTags,
+      handleHideAddTags,
       handleClickFloatButtonItem,
-      handleClickOverlayTagItem
+      handleClickOverlayTagItem,
+      handleTagToggle,
+      handleClickComplete
     }
   }
 })
@@ -426,5 +499,20 @@ export default defineComponent({
 .pop-fix-button button:last-child {
   flex: 60% 3;
   margin-left: 10px;
+}
+
+.tags-select-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-flow: column wrap;
+
+  margin: 5px 10px;
+
+  font-size: 16px;
+}
+
+.tags-select-container .tags-container > div {
+  margin: 10px 0;
 }
 </style>

@@ -31,6 +31,20 @@ export default {
       if (tag) {
         tag.show = !tag?.show
       }
+    },
+
+    updateTagsOption (state: IState, payload: string[]) {
+      for (const tag of state.data) {
+        tag.show = false
+
+        for (const id of payload) {
+          if (id === tag.id) {
+            tag.show = true
+          }
+        }
+      }
+
+      console.log(47, state.data)
     }
   },
 
