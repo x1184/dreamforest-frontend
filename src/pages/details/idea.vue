@@ -78,7 +78,7 @@
             plain
             round
             type="primary"
-            v-for="tag of idea.information.tags"
+            v-for="tag of tags.information"
             :key="tag.id"
           >
             <span class="header-tag">
@@ -106,11 +106,12 @@
         <div class="details-title">关联项目</div>
         <div
           class="details-project"
-          @click="handleGoProjectDetail('1')"
+          v-for="project of projects.information"
+          :key="project.id"
+          @click="handleGoProjectDetail(`${project.id}`)"
         >
-          <!-- TODO -->
           <div>
-            梦想森林 -- 逐梦自己的社区
+            {{ project.title }}
           </div>
         </div>
       </div>
@@ -131,16 +132,16 @@
 
       <van-sticky position="bottom">
         <div class="details-sticky-bottom">
-          <div>
+          <div @click="handleClickLike">
             <span>
-              <van-icon name="like-o" />
+              <van-icon :name="idea.information.isLike ? 'like' : 'like-o'" />
             </span>
             <span>点赞</span>
           </div>
 
-          <div>
+          <div @click="handleClickStar">
             <span>
-              <van-icon name="like-o" />
+              <van-icon :name="idea.information.isStar ? 'star' : 'star-o'" />
             </span>
             <span>关注</span>
           </div>
@@ -194,12 +195,18 @@ import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 
-import { IIdeaProps } from '../../interface'
+import { IIdeaProps, ITagProps, IProjectProps } from '../../interface'
 
 import DfHeader from '../../layouts/DfHeader.vue'
 
 interface IIdeaInformationProps {
   information: IIdeaProps;
+}
+interface ITagsInformationProps {
+  information: ITagProps[];
+}
+interface IProjectsInformationProps {
+  information: IProjectProps[];
 }
 
 export default defineComponent({
@@ -219,13 +226,21 @@ export default defineComponent({
         content: ''
       }
     })
+    const tags = reactive<ITagsInformationProps>({
+      information: []
+    })
+    const projects = reactive<IProjectsInformationProps>({
+      information: []
+    })
 
     onMounted(async () => {
       const response = await store.dispatch('ideas/getIdeaDetailById', {
         id: params.id
       })
 
-      idea.information = response
+      idea.information = response.idea
+      tags.information = response.tags
+      projects.information = response.projects
     })
 
     const handleGoback = () => {
@@ -240,12 +255,40 @@ export default defineComponent({
     const handleToggleShowPopup = () => {
       showPopup.value = !showPopup.value
     }
+    // 点赞
+    const handleClickLike = async () => {
+      if (!idea.information.isLike) {
+        const response = await store.dispatch('ideas/addLike', {
+          id: params.id
+        })
+
+        if (response.code === 200) {
+          idea.information.isLike = true
+        }
+      }
+    }
+    // 关注
+    const handleClickStar = async () => {
+      if (!idea.information.isStar) {
+        const response = await store.dispatch('ideas/addStar', {
+          id: params.id
+        })
+
+        if (response.code === 200) {
+          idea.information.isStar = true
+        }
+      }
+    }
 
     return {
       idea,
+      tags,
+      projects,
       showPopup,
 
       handleGoback,
+      handleClickLike,
+      handleClickStar,
       handleGoProjectDetail,
       handleToggleShowPopup,
       handleGoAddProject

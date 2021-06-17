@@ -1,6 +1,8 @@
 import { ActionContext } from 'vuex'
 
 import {
+  addLike,
+  addStar,
   addNewIdea,
   getAllIdea,
   findIdeaByTagId,
@@ -126,6 +128,28 @@ export default {
       payload: any
     ) {
       addNewIdea(payload)
+    },
+
+    async addLike (
+      action: ActionContext<IIdeaProps, any>,
+      payload: any
+    ) {
+      const response = await addLike(payload)
+
+      if (response.code === 200) {
+        return response
+      }
+    },
+
+    async addStar (
+      action: ActionContext<IIdeaProps, any>,
+      payload: any
+    ) {
+      const response = await addStar(payload)
+
+      if (response.code === 200) {
+        return response
+      }
     }
   }
 }

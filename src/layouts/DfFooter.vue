@@ -12,7 +12,6 @@
       v-for="item of tabbar"
       :key="item.name"
       :name="item.name"
-      :icon="item.icon"
       :to="item.path"
     >
       {{item.label}}

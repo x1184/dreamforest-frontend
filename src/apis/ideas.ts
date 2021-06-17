@@ -55,3 +55,21 @@ export async function findLikeIdeaByUserId (data: any) {
     data
   })
 }
+
+// 点赞
+export async function addLike (data: any) {
+  return request({
+    method: 'post',
+    url: `/${MODULE}/addLike`,
+    data
+  })
+}
+
+// 关注
+export async function addStar (data: any) {
+  return request({
+    method: 'post',
+    url: `/${MODULE}/addAttention`,
+    data
+  })
+}

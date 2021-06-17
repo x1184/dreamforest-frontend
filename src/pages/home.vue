@@ -77,7 +77,7 @@
         <van-button
           round
           class="project-btn"
-          @click="handleClickFloatButtonItem('project')"
+          @click="handleClickFloatButtonItem('idea-project')"
         >
           <van-icon name="gift-o" />
         </van-button>

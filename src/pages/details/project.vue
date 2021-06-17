@@ -13,16 +13,16 @@
       <div>
         <div class="details-title">项目标题</div>
         <div>
-          {{ project.information.title }}
+          {{ project.title }}
         </div>
       </div>
       <div>
         <div class="details-title">项目内容</div>
         <div class="details-content">
-          {{ project.information.content }}
+          {{ project.content }}
         </div>
         <div class="details-create-time">
-          创建于 {{ project.information.createTime }}
+          创建于 {{ project.createTime }}
         </div>
       </div>
     </div>
@@ -30,17 +30,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, onMounted } from 'vue'
+import { defineComponent, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 
-import { IProjectProps } from '../../interface'
-
 import DfHeader from '../../layouts/DfHeader.vue'
-
-interface IProjectInformationProps {
-  information: IProjectProps;
-}
 
 export default defineComponent({
   components: {
@@ -50,12 +44,9 @@ export default defineComponent({
   setup () {
     const { params } = useRoute()
     const router = useRouter()
-
     const store = useStore()
 
-    const project = reactive<IProjectInformationProps>({
-      information: {}
-    })
+    const project = computed(() => store.state.projects.data)
 
     // onMounted
     onMounted(() => {

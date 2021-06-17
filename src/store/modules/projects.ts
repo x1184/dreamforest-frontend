@@ -6,7 +6,16 @@ import {
 } from '../../apis/projects'
 import { IProjectProps } from '../../interface'
 
-const initialState: IProjectProps = {}
+interface IState {
+  data: IProjectProps;
+}
+
+const initialState: IState = {
+  data: {
+    title: '',
+    content: ''
+  }
+}
 
 export default {
   namespaced: true,
@@ -16,8 +25,8 @@ export default {
   getters: {},
 
   mutations: {
-    updateProject (state: IProjectProps, payload: IProjectProps) {
-      state = payload
+    updateProject (state: IState, payload: IProjectProps) {
+      state.data = payload
     }
   },
 
@@ -35,7 +44,7 @@ export default {
     },
 
     // 添加项目
-    addProject (
+    async addProject (
       action: ActionContext<IProjectProps, any>,
       payload: any
     ) {
