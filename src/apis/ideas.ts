@@ -73,3 +73,21 @@ export async function addStar (data: any) {
     data
   })
 }
+
+// 给想法评论
+export async function addCommentByUserIdAndIdeaId (data: any) {
+  return request({
+    method: 'post',
+    url: '/comment/addCommentByUserIdAndIdeaId',
+    data
+  })
+}
+
+// 通过想法id查询评论
+export async function findCommentByIdeaId (data: any) {
+  return request({
+    method: 'post',
+    url: '/comment/findCommentByIdeaId',
+    data
+  })
+}

@@ -24,6 +24,7 @@ export interface ICommentProps {
   title: string;
   createTime?: string;
   personal?: IPersonalProps;
+  user?: IPersonalProps;
 }
 
 export interface IAboutProps {

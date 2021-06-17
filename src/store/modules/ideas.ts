@@ -7,8 +7,10 @@ import {
   getAllIdea,
   findIdeaByTagId,
   getIdeaDetailById,
+  findCommentByIdeaId,
   findLikeIdeaByUserId,
-  findAttentionIdeaByUserId
+  findAttentionIdeaByUserId,
+  addCommentByUserIdAndIdeaId
 } from '../../apis/ideas'
 import { IIdeaProps } from '../../interface'
 
@@ -150,6 +152,27 @@ export default {
       if (response.code === 200) {
         return response
       }
+    },
+
+    // 查询评论
+    async findCommentByIdeaId (
+      action: ActionContext<IIdeaProps, any>,
+      payload: any
+    ) {
+      const response = await findCommentByIdeaId(payload)
+
+      if (response.code === 200) {
+        return response.data
+      }
+    },
+
+    // 添加评论
+    async addCommentByUserIdAndIdeaId (
+      action: ActionContext<IIdeaProps, any>,
+      payload: any
+    ) {
+      const response = await addCommentByUserIdAndIdeaId(payload)
+      return response
     }
   }
 }

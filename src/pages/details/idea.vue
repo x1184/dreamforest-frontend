@@ -18,12 +18,14 @@
         <div class="details-title">想法标题</div>
         <div>{{ idea.information.title }}</div>
       </div>
+
       <div>
         <div class="details-title">想法内容</div>
         <div class="details-content">
           {{ idea.information.content }}
         </div>
       </div>
+
       <div>
         <div class="details-title">
           <span>发起人</span>
@@ -42,6 +44,7 @@
           </div>
         </div>
       </div>
+
       <div>
         <div class="details-title">趋势</div>
         <div class="details-icon">
@@ -71,6 +74,7 @@
           </div>
         </div>
       </div>
+
       <div>
         <div class="details-title">标签</div>
         <div>
@@ -170,21 +174,59 @@
       v-model:show="showPopup"
       :style="{ height: '60%' }"
     >
-      <div>
-        <div>
+      <div class="detail-container">
+        <div class="detail-comment-title">
           <span>所有评论</span>
-          <span>
+          <span class="detail-comment-time">
             <span>发表时间</span>
             <span>
-              <van-icon name="descending" />
+              <van-icon
+                :name="pages.sort ? 'descending' : 'ascending'"
+                @click="handleSortClick"
+              />
             </span>
           </span>
         </div>
-        <div></div>
-        <div>
-          <van-field maxlength="50"></van-field>
-          <van-button>发表</van-button>
-        </div>
+        <van-list
+          v-model:loading="comments.loading"
+          class="comment-container"
+          finished-text="没有更多了"
+          :finished="comments.finished"
+          @load="handleLoadComment"
+        >
+          <div
+            v-for="comment of comments.information"
+            :key="comment.id"
+            class="comment-detail"
+          >
+            <div class="avatar">
+              <img
+                :src="comment.user?.avatar"
+                alt="avatar"
+              >
+            </div>
+
+            <div class="comment-content">
+              <div>
+                {{ comment.user?.name }}
+              </div>
+              <div>
+                {{ comment.title }}
+              </div>
+              <div>
+                <span>发表于</span>
+                <span>{{ comment.createTime }}</span>
+              </div>
+            </div>
+          </div>
+        </van-list>
+      </div>
+      <div class="detail-submit-container">
+        <van-field
+          v-model="comment.title"
+          maxlength="50"
+        ></van-field>
+        <van-button @click="addCommentByUserIdAndIdeaId">发表</van-button>
       </div>
     </van-popup>
   </div>
@@ -195,7 +237,7 @@ import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 
-import { IIdeaProps, ITagProps, IProjectProps } from '../../interface'
+import { IIdeaProps, ITagProps, IProjectProps, ICommentProps } from '../../interface'
 
 import DfHeader from '../../layouts/DfHeader.vue'
 
@@ -207,6 +249,12 @@ interface ITagsInformationProps {
 }
 interface IProjectsInformationProps {
   information: IProjectProps[];
+}
+interface ICommentsInformationProps {
+  information: ICommentProps[];
+  total: number;
+  loading: boolean;
+  finished: boolean;
 }
 
 export default defineComponent({
@@ -220,6 +268,9 @@ export default defineComponent({
     const store = useStore()
 
     const showPopup = ref(false)
+    const comment = reactive({
+      title: ''
+    })
     const idea = reactive<IIdeaInformationProps>({
       information: {
         title: '',
@@ -232,6 +283,17 @@ export default defineComponent({
     const projects = reactive<IProjectsInformationProps>({
       information: []
     })
+    const comments = reactive<ICommentsInformationProps>({
+      information: [],
+      total: 1,
+      loading: false,
+      finished: false
+    })
+    const pages = reactive({
+      pageIndex: 1,
+      pageSize: 10,
+      sort: 0
+    })
 
     onMounted(async () => {
       const response = await store.dispatch('ideas/getIdeaDetailById', {
@@ -243,17 +305,60 @@ export default defineComponent({
       projects.information = response.projects
     })
 
+    // 加载
+    const handleLoadComment = async () => {
+      const response = await store.dispatch('ideas/findCommentByIdeaId', {
+        ...pages,
+        id: params.id
+      })
+
+      if (response) {
+        for (const comment of response.comments) {
+          comments.information.push(comment)
+        }
+        comments.total = response.total
+        pages.pageIndex += 1
+      }
+
+      comments.loading = false
+
+      if (comments.information.length >= comments.total) {
+        comments.finished = true
+        comments.loading = true
+      }
+    }
+    // 退回
     const handleGoback = () => {
       router.go(-1)
     }
+    // 前往项目详情
     const handleGoProjectDetail = (id: string) => {
       router.push(`/project/${id}`)
     }
+    // 关联项目
     const handleGoAddProject = () => {
       router.push('/form/project')
     }
-    const handleToggleShowPopup = () => {
+    const handleToggleShowPopup = async () => {
       showPopup.value = !showPopup.value
+      if (!showPopup.value) {
+        comments.finished = false
+        comments.loading = false
+        comments.total = 1
+        comments.information = []
+        pages.pageIndex = 1
+      }
+    }
+    // 发表评论
+    const addCommentByUserIdAndIdeaId = async () => {
+      const response = await store.dispatch('ideas/addCommentByUserIdAndIdeaId', {
+        ...comment,
+        projectId: params.id
+      })
+
+      if (response.code === 200) {
+        comment.title = ''
+      }
     }
     // 点赞
     const handleClickLike = async () => {
@@ -279,18 +384,30 @@ export default defineComponent({
         }
       }
     }
+    // 切换顺序
+    const handleSortClick = async () => {
+      pages.sort = 1
+      pages.pageIndex = 1
+      handleLoadComment()
+    }
 
     return {
       idea,
       tags,
+      pages,
+      comment,
       projects,
+      comments,
       showPopup,
 
       handleGoback,
+      handleSortClick,
       handleClickLike,
       handleClickStar,
+      handleLoadComment,
       handleGoProjectDetail,
       handleToggleShowPopup,
+      addCommentByUserIdAndIdeaId,
       handleGoAddProject
     }
   }
@@ -430,5 +547,99 @@ export default defineComponent({
 
 .header-tag {
   padding: 5px 10px;
+}
+
+.detail-container {
+  position: relative;
+
+  margin: 5px 10px;
+  margin-top: 30px;
+  font-size: 24px;
+}
+
+.detail-comment-time {
+  display: flex;
+  align-items: center;
+}
+
+.detail-container i {
+  margin-left: 10px;
+  font-size: 30px;
+}
+
+.detail-comment-title {
+  position: sticky;
+  top: 0;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 10px 0;
+
+  background: white;
+}
+
+.detail-container .comment-detail {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  margin-top: 20px;
+
+  font-size: 16px;
+}
+
+.detail-container .comment-detail img {
+  margin-right: 10px;
+
+  width: 70px;
+  height: 70px;
+
+  border-radius: 50%;
+}
+
+.comment-container {
+  margin-bottom: 70px;
+}
+
+.comment-content {
+  flex: 1;
+
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding: 5px 10px;
+
+  border: 1px solid #ccc;
+}
+
+.comment-content div {
+  margin-top: 10px;
+}
+
+.comment-content div:first-child {
+  margin-top: 0px;
+}
+
+.detail-submit-container {
+  position: fixed;
+  bottom: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+}
+
+.detail-submit-container div:first-child {
+  flex: 4;
+}
+
+.detail-submit-container div:last-child {
+  flex: 1;
 }
 </style>
