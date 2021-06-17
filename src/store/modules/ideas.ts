@@ -196,6 +196,8 @@ export default {
       if (response.code === 200) {
         return response
       }
-    }
+    },
+
+    hello () {}
   }
 }
