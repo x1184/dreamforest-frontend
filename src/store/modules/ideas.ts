@@ -10,7 +10,9 @@ import {
   findCommentByIdeaId,
   findLikeIdeaByUserId,
   findAttentionIdeaByUserId,
-  addCommentByUserIdAndIdeaId
+  addCommentByUserIdAndIdeaId,
+  updateAttentionIdeaByUserId,
+  updateAllAttentionIdeaByUserId
 } from '../../apis/ideas'
 import { IIdeaProps } from '../../interface'
 
@@ -173,6 +175,27 @@ export default {
     ) {
       const response = await addCommentByUserIdAndIdeaId(payload)
       return response
+    },
+
+    // 取消全部关注
+    async updateAllAttentionIdeaByUserId () {
+      const response = await updateAllAttentionIdeaByUserId()
+
+      if (response.code === 200) {
+        return response
+      }
+    },
+
+    // 取消关注
+    async updateAttentionIdeaByUserId (
+      action: ActionContext<IIdeaProps, any>,
+      payload: any
+    ) {
+      const response = await updateAttentionIdeaByUserId(payload)
+
+      if (response.code === 200) {
+        return response
+      }
     }
   }
 }

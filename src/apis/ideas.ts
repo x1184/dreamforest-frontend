@@ -91,3 +91,20 @@ export async function findCommentByIdeaId (data: any) {
     data
   })
 }
+
+// 取消全部关注
+export async function updateAllAttentionIdeaByUserId () {
+  return request({
+    method: 'post',
+    url: '/idea/updateAllAttentionIdeaByUserId'
+  })
+}
+
+// 取消全部关注
+export async function updateAttentionIdeaByUserId (data: any) {
+  return request({
+    method: 'post',
+    url: '/idea/updateAttentionIdeaByUserId',
+    data
+  })
+}

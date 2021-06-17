@@ -53,27 +53,36 @@
           @load="handleLoad"
         >
           <df-card
-            v-for="item in ideas"
-            :key="item.id"
-            :id="item.id"
-            :name="item.initiator?.name"
-            :title="item.title"
-            :avatar="item.initiator?.avatar"
-            :createTime="item.createTime"
-            :link="item.link"
-            :tags="item.tags"
-            :times="item.times"
+            v-for="(idea, index) of ideas"
+            :clickable="false"
+            :selected="selected.list[index]"
+            :key="idea.id"
+            :id="idea.id"
+            :name="idea.initiator?.name"
+            :title="idea.title"
+            :avatar="idea.initiator?.avatar"
+            :createTime="idea.createTime"
+            :link="idea.link"
+            :tags="idea.tags"
+            :times="idea.times"
             :type="['comment', 'like', 'share']"
+            @handleClickCard="handleSelectedCard(index)"
           >
           </df-card>
         </van-list>
 
         <div>
-          <van-checkbox>
+          <van-checkbox
+            v-model="selected.all"
+            @change="handleSelectedAllButton"
+          >
             全选
           </van-checkbox>
 
-          <van-button size="small">
+          <van-button
+            size="small"
+            @click="handleCancelStar"
+          >
             取消关注
           </van-button>
         </div>
@@ -83,7 +92,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, computed } from 'vue'
+import { defineComponent, reactive, ref, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 
 import DfHeader from '../layouts/DfHeader.vue'
@@ -92,6 +101,10 @@ import DfCard from '../components/DfCard.vue'
 interface IListProps {
   loading: boolean;
   finished: boolean;
+}
+interface ISelectedProps {
+  list: boolean[];
+  all: boolean;
 }
 
 export default defineComponent({
@@ -108,6 +121,11 @@ export default defineComponent({
     // 想法列表
     const ideas = computed(() => store.state.ideas.data)
     const total = computed(() => store.state.ideas.total)
+
+    const selected = reactive<ISelectedProps>({
+      list: [],
+      all: false
+    })
     const showPopup = ref(false)
     const page = reactive({
       pageIndex: 1,
@@ -120,13 +138,17 @@ export default defineComponent({
     })
 
     // 加载效果
-    const handleLoad = () => {
+    const handleLoad = async () => {
       lists.loading = false
-      store.dispatch('ideas/findAttentionIdeaByUserId', {
+      await store.dispatch('ideas/findAttentionIdeaByUserId', {
         ...page
       })
 
-      if (ideas.length >= total) {
+      if (selected.all) {
+        selected.list = Array.from(ideas.value, () => true)
+      }
+
+      if (ideas.value.length >= total) {
         lists.finished = true
       }
 
@@ -135,14 +157,79 @@ export default defineComponent({
     const handleToggleShowPopup = () => {
       showPopup.value = !showPopup.value
     }
+    // 点击单个想法
+    const handleSelectedCard = (index: number) => {
+      console.log(selected)
+      selected.all = false
+      if (!selected.list[index]) {
+        selected.list[index] = true
+      } else {
+        selected.list[index] = false
+      }
+    }
+    // 点击全选按钮
+    const handleSelectedAllButton = (value: boolean) => {
+      selected.all = value
+
+      if (selected.all) {
+        selected.list = Array.from(ideas.value, () => true)
+      } else {
+        selected.list = Array.from(ideas.value, () => false)
+      }
+    }
+    // 点击取消关注
+    const handleCancelStar = async () => {
+      if (selected.all) {
+        const response = await store.dispatch('ideas/updateAllAttentionIdeaByUserId')
+        if (response.code === 200) {
+          store.dispatch('ideas/findAttentionIdeaByUserId')
+          page.pageIndex = 1
+          page.pageSize = 10
+          showPopup.value = false
+          selected.all = false
+          selected.list = []
+        }
+      } else {
+        const ids = []
+
+        console.log(typeof ideas.value)
+
+        for (let i = 0; i < ideas.value.length; i += 1) {
+          if (selected.list[i]) {
+            ids.push(ideas.value[i].id)
+          }
+        }
+
+        const response = await store.dispatch('ideas/updateAttentionIdeaByUserId', {
+          id: ids
+        })
+
+        if (response.code === 200) {
+          store.dispatch('ideas/findAttentionIdeaByUserId')
+          page.pageIndex = 1
+          page.pageSize = 10
+          showPopup.value = false
+          selected.all = false
+          selected.list = []
+        }
+      }
+    }
+
+    onMounted(() => {
+      handleLoad()
+    })
 
     return {
       ideas,
       lists,
+      selected,
       showPopup,
 
       handleLoad,
-      handleToggleShowPopup
+      handleCancelStar,
+      handleSelectedCard,
+      handleToggleShowPopup,
+      handleSelectedAllButton
     }
   }
 })
@@ -215,5 +302,9 @@ export default defineComponent({
 
   font-size: 18px;
   background-color: #fff;
+}
+
+.star-popup-container .van-list {
+  margin-bottom: 50px;
 }
 </style>

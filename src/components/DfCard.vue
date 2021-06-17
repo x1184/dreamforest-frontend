@@ -4,6 +4,13 @@
       class="df-card-avatar"
       @click="handleClick"
     >
+      <span
+        v-if="selected"
+        class="df-card-selected"
+      >
+        <span></span>
+      </span>
+
       <div>
         <img
           :src="avatar"
@@ -107,8 +114,7 @@ export default defineComponent({
       required: true
     },
     avatar: {
-      type: String,
-      default: 'https://img.yzcdn.cn/vant/ipad.jpeg'
+      type: String
     },
     name: {
       type: String,
@@ -135,10 +141,22 @@ export default defineComponent({
     type: {
       type: Array,
       required: true
+    },
+    clickable: {
+      type: Boolean,
+      default: true
+    },
+    selected: {
+      type: Boolean,
+      default: false
     }
   },
 
-  setup ({ id, tags }) {
+  emits: {
+    handleClickCard: null
+  },
+
+  setup ({ id, tags, clickable }, context) {
     const router = useRouter()
 
     const showTags = ref(false)
@@ -147,9 +165,12 @@ export default defineComponent({
     const handleToggleTags = () => {
       showTags.value = !showTags.value
     }
-
     const handleClick = () => {
-      router.push(`/idea/${id}`)
+      if (clickable) {
+        router.push(`/idea/${id}`)
+      } else {
+        context.emit('handleClickCard')
+      }
     }
 
     return {
@@ -165,6 +186,8 @@ export default defineComponent({
 
 <style>
 .df-card-container {
+  position: relative;
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -176,6 +199,21 @@ export default defineComponent({
 
   font-size: 16px;
   box-shadow: 0.2rem 0.2rem 0.13333rem #88888861;
+}
+
+.df-card-selected {
+  z-index: 999;
+  position: absolute;
+  top: 30px;
+  left: 10px;
+}
+
+.df-card-selected span {
+  width: 0;
+  height: 0;
+
+  border-top: 20px solid black;
+  border-right: 20px solid transparent;
 }
 
 .df-card-avatar {
