@@ -61,7 +61,7 @@
           class="form-private"
           @click="showPicker = true"
         >
-          无私密性
+          {{ form.private.type ? `${form.private.type}: ${form.private.time}` : '无私密性'}}
         </div>
       </div>
 
@@ -158,10 +158,10 @@ export default defineComponent({
       {
         values: [{
           text: '匿名发布',
-          value: 1
+          value: '匿名发布'
         }, {
           text: '内容私密发布',
-          value: 2
+          value: '内容私密发布'
         }],
         defaultIndex: 0
       },
@@ -169,16 +169,16 @@ export default defineComponent({
       {
         values: [{
           text: '3天',
-          value: 3
+          value: '3天'
         }, {
           text: '一周',
-          value: 7
+          value: '一周'
         }, {
           text: '一月',
-          value: 30
+          value: '一月'
         }, {
           text: '半年',
-          value: 180
+          value: '半年'
         }],
         defaultIndex: 0
       }

@@ -48,7 +48,8 @@ export default {
       action: ActionContext<IProjectProps, any>,
       payload: any
     ) {
-      addProject(payload)
+      const response = await addProject(payload)
+      return response
     }
   }
 }

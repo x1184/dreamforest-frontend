@@ -4,6 +4,10 @@ import styleImport from 'vite-plugin-style-import'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    open: true,
+    port: 200
+  },
   plugins: [
     vue(),
     styleImport({

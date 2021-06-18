@@ -53,7 +53,7 @@ export default defineComponent({
       router.go(-1)
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
       const form = (projectRef.value as any).form
       if (!form.title) {
         Toast({
@@ -71,7 +71,10 @@ export default defineComponent({
         return null
       }
 
-      store.dispatch('projects/addProject', form)
+      const response = await store.dispatch('projects/addProject', form)
+      if (response.code === 200) {
+        router.go(-1)
+      }
     }
 
     return {

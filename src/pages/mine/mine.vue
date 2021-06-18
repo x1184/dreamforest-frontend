@@ -76,6 +76,9 @@
       @close="handleCloseNewEmailPopup"
     >
       <div class="popup-container">
+        <div class="popup-title">
+          新邮箱
+        </div>
         <van-field
           type="email"
           name="phone"
@@ -121,6 +124,9 @@
       @close="handleCloseConfirmPhonePopup"
     >
       <div class="popup-container">
+        <div class="popup-title">
+          确认当前操作
+        </div>
         <van-field
           type="tel"
           name="phone"
@@ -166,6 +172,9 @@
       @close="handleCloseNewPhonePopup"
     >
       <div class="popup-container">
+        <div class="popup-title">
+          新手机号
+        </div>
         <van-field
           type="tel"
           name="phone"

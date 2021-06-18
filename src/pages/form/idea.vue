@@ -53,7 +53,7 @@ export default defineComponent({
       router.go(-1)
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
       const form = (ideaRef.value as any).form
 
       if (!form.title) {
@@ -72,7 +72,7 @@ export default defineComponent({
         return null
       }
 
-      store.dispatch('ideas/addNewIdea', {
+      const response = await store.dispatch('ideas/addNewIdea', {
         idea: {
           ...form,
           plan: {
@@ -81,6 +81,10 @@ export default defineComponent({
           }
         }
       })
+
+      if (response.code === 200) {
+        router.go(-1)
+      }
     }
 
     return {

@@ -52,7 +52,7 @@ export default {
       const response = await login(payload)
 
       if (response.code === 200) {
-        localStorage.setItem('authorization', response.uuid)
+        localStorage.setItem('authorization', response.data)
       }
 
       return response
@@ -66,7 +66,7 @@ export default {
       const response = await register(payload)
 
       if (response.code === 200) {
-        localStorage.setItem('authorization', response.uuid)
+        localStorage.setItem('authorization', response.data)
       }
 
       return response

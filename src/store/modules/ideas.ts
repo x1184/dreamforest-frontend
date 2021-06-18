@@ -127,11 +127,12 @@ export default {
       }
     },
 
-    addNewIdea (
+    async addNewIdea (
       action: ActionContext<IIdeaProps, any>,
       payload: any
     ) {
-      addNewIdea(payload)
+      const response = addNewIdea(payload)
+      return response
     },
 
     async addLike (

@@ -245,9 +245,7 @@ export default defineComponent({
     const handleBlurPhone = () => {
       const phone = /^1[3-9]\d{9}$/.test(form.phone)
 
-      if (phone) {
-        timing.disabled = false
-      } else {
+      if (!phone) {
         Toast({
           message: '请输入正确的手机号',
           position: 'bottom'
@@ -346,6 +344,10 @@ export default defineComponent({
           handleCloseForgetPassword()
           handleShowNewPassword()
         }
+      }
+
+      if (/^1[3-9]\d{9}$/.test(form.phone) && timing.count >= 60) {
+        timing.disabled = false
       }
     })
 

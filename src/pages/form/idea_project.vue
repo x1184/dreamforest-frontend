@@ -15,8 +15,8 @@
         />
       </template>
     </df-header>
-    <df-form-project></df-form-project>
-    <df-form-idea></df-form-idea>
+    <df-form-project :ref="el => projectRef = el"></df-form-project>
+    <df-form-idea :ref="el => ideaRef = el"></df-form-idea>
 
     <div class="submit-btn">
       <van-button
@@ -56,13 +56,32 @@ export default defineComponent({
       router.go(-1)
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
       const ideaForm = (ideaRef.value as any).form
       const projectForm = (projectRef.value as any).form
 
+      if (!projectForm.title) {
+        Toast({
+          message: '请输入项目标题',
+          position: 'bottom'
+        })
+
+        return null
+      }
+
+      if (!projectForm.content) {
+        Toast({
+          message: '请输入项目内容',
+          position: 'bottom'
+        })
+
+        return null
+      }
+
       if (!ideaForm.title) {
         Toast({
-          message: '请输入想法标题'
+          message: '请输入想法标题',
+          position: 'bottom'
         })
 
         return null
@@ -70,29 +89,14 @@ export default defineComponent({
 
       if (!ideaForm.content) {
         Toast({
-          message: '请输入想法内容'
+          message: '请输入想法内容',
+          position: 'bottom'
         })
 
         return null
       }
 
-      if (!projectForm.content) {
-        Toast({
-          message: '请输入项目内容'
-        })
-
-        return null
-      }
-
-      if (!projectForm.content) {
-        Toast({
-          message: '请输入项目内容'
-        })
-
-        return null
-      }
-
-      store.dispatch('projects/addProject', {
+      const response = await store.dispatch('projects/addProject', {
         idea: {
           ...ideaForm,
           plan: {
@@ -102,6 +106,10 @@ export default defineComponent({
         },
         project: projectForm
       })
+
+      if (response.code === 200) {
+        router.go(-1)
+      }
     }
 
     return {

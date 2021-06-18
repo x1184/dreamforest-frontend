@@ -194,4 +194,8 @@ export default defineComponent({
 .register-button__submit {
   padding: 0 10px;
 }
+
+.van-overlay {
+  margin-top: 0;
+}
 </style>
