@@ -17,7 +17,7 @@
 以上规范都会在 git commit 的时候检查, 如果**没有检查成功**请重新进行 git commit
 
 ### 项目运行
-克隆项目:
+克隆项目
 ```bash
 git clone https://github.com/x1184/dreamforest-frontend.git
 ```
