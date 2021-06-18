@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <df-header></df-header> -->
     <df-personal-card
       :user="user"
       type="createTime"
@@ -38,14 +37,12 @@ import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
 import DfPersonalCard from '../components/DfPersonalCard.vue'
-import DfHeader from '../layouts/DfHeader.vue'
 
 export default defineComponent({
   name: 'df-personal',
 
   components: {
-    [DfPersonalCard.name]: DfPersonalCard,
-    [DfHeader.name]: DfHeader
+    [DfPersonalCard.name]: DfPersonalCard
   },
 
   setup () {
