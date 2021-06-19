@@ -28,7 +28,10 @@
     </div>
 
     <div class="df-card-footer">
-      <div class="df-card-tags">
+      <div
+        class="df-card-tags"
+        v-show="cardTags.length"
+      >
         <van-tag
           round
           plain
@@ -46,6 +49,23 @@
         >
           <span class="df-card-tag-item">...</span>
         </van-tag>
+      </div>
+
+      <div
+        class="df-card-tags"
+        v-show="plan"
+      >
+        <!-- <div class="details-title">状态</div> -->
+        <div class="details-status">
+          <div>{{ plan?.startTime }}</div>
+          <div>
+            <van-icon name="arrow-left" />
+          </div>
+          <div>
+            <van-icon name="arrow" />
+          </div>
+          <div>{{ plan?.endTime }}</div>
+        </div>
       </div>
 
       <div class="df-card-icon">
@@ -135,8 +155,7 @@ export default defineComponent({
       required: true
     },
     tags: {
-      type: Array,
-      required: true
+      type: Array
     },
     type: {
       type: Array,
@@ -149,6 +168,9 @@ export default defineComponent({
     selected: {
       type: Boolean,
       default: false
+    },
+    plan: {
+      type: Object
     }
   },
 
@@ -299,5 +321,13 @@ export default defineComponent({
 .df-card-hidden-tags > span {
   margin-top: 5px;
   margin-left: 3px;
+}
+
+.details-status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin-left: 30px;
 }
 </style>

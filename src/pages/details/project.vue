@@ -26,6 +26,24 @@
         </div>
       </div>
     </div>
+
+    <div class="details-sponsor">
+      <div>
+        参与者:
+      </div>
+
+      <div class="sponsor-avatar">
+        <div>
+          <img
+            src="https://cdn.fakercloud.com/avatars/joreira_128.jpg"
+            alt="sponsor-logo"
+          >
+        </div>
+        <div class="sponsor-name">
+          发起者
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -48,8 +66,6 @@ export default defineComponent({
 
     const project = computed(() => store.state.projects.data)
 
-    console.log(51, project)
-
     // onMounted
     onMounted(() => {
       store.dispatch('projects/findProjectDetailByProjectId', {
@@ -70,7 +86,7 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style scoped>
 .details-container {
   display: flex;
   justify-content: center;
@@ -78,6 +94,7 @@ export default defineComponent({
   flex-flow: column;
 
   margin: 10px 20px;
+  margin-bottom: 50px;
 
   font-size: 20px;
 }
@@ -116,5 +133,42 @@ export default defineComponent({
 
   font-size: 16px;
   color: #00000082;
+}
+
+.details-sponsor {
+  position: fixed;
+  bottom: 0;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 20px;
+
+  font-size: 16px;
+  border-radius: 1px solid #ccc;
+}
+
+.sponsor-avatar {
+  position: relative;
+  margin-left: 20px;
+}
+
+.sponsor-avatar img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+.sponsor-name {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%);
+
+  text-align: center;
+
+  width: 100px;
+  height: 30px;
+  background: white;
 }
 </style>

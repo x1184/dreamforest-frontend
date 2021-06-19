@@ -248,7 +248,6 @@ export default defineComponent({
       showPicker.value = false
     }
     const handleSliderChange = (value: any) => {
-      console.log(value)
     }
 
     return {

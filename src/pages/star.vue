@@ -27,8 +27,9 @@
         :avatar="item.initiator?.avatar"
         :createTime="item.createTime"
         :link="item.link"
-        :tags="item.tags"
+        :tags="[]"
         :times="item.times"
+        :plan="item.plan"
         :type="['comment', 'like', 'share']"
       >
       </df-card>
@@ -159,7 +160,6 @@ export default defineComponent({
     }
     // 点击单个想法
     const handleSelectedCard = (index: number) => {
-      console.log(selected)
       selected.all = false
       if (!selected.list[index]) {
         selected.list[index] = true
@@ -191,8 +191,6 @@ export default defineComponent({
         }
       } else {
         const ids = []
-
-        console.log(typeof ideas.value)
 
         for (let i = 0; i < ideas.value.length; i += 1) {
           if (selected.list[i]) {

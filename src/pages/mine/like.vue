@@ -79,7 +79,6 @@ export default defineComponent({
     // 加载效果
     const handleLoad = () => {
       lists.loading = false
-      console.log(ideas.value.length)
       if (ideas.value.length >= total.value) {
         lists.finished = true
       }
