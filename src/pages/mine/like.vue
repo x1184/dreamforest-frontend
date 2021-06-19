@@ -64,7 +64,7 @@ export default defineComponent({
 
     // 想法列表
     const ideas = computed(() => store.state.ideas.data)
-    const tagId = ref('')
+    const total = computed(() => store.state.ideas.total)
     const showPopup = ref(false)
     const page = reactive({
       pageIndex: 1,
@@ -79,8 +79,12 @@ export default defineComponent({
     // 加载效果
     const handleLoad = () => {
       lists.loading = false
+      console.log(ideas.value.length)
+      if (ideas.value.length >= total.value) {
+        lists.finished = true
+      }
+
       store.dispatch('ideas/findLikeIdeaByUserId', {
-        id: tagId,
         ...page
       })
 

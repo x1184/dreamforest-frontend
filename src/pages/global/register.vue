@@ -59,13 +59,13 @@ export default defineComponent({
     const router = useRouter()
     const store = useStore()
 
+    const type = ref('phone')
     const form = reactive<any>({
       username: '',
       phoneOrEmail: '',
       password: '',
       confirmPassword: ''
     })
-    const type = ref('phone')
 
     // Function
     // ==============================

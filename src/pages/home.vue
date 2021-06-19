@@ -247,11 +247,11 @@ export default defineComponent({
     const showAllTags = ref(false)
     const showAddTags = ref(false)
     const allSelected = ref(true)
-    const tagSelected = reactive((new Array(tags.value.length)).fill(false))
     // 标签的列表选择
     const checked = ref<Array<string | undefined>>([])
     const checkboxRefs = ref<Element[]>([])
     const tagId = ref('')
+    const tagSelected = reactive((new Array(tags.value.length)).fill(false))
     const page = reactive({
       pageIndex: 1,
       pageSize: 10

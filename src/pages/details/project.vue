@@ -48,6 +48,8 @@ export default defineComponent({
 
     const project = computed(() => store.state.projects.data)
 
+    console.log(51, project)
+
     // onMounted
     onMounted(() => {
       store.dispatch('projects/findProjectDetailByProjectId', {

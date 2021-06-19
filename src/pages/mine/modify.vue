@@ -36,6 +36,7 @@
         size="large"
       >
         <van-field
+          maxlength="20"
           v-model="form.name"
           :placeholder="user.name || '请输入昵称'"
         />
@@ -46,10 +47,10 @@
         size="large"
       >
         <van-field
-          v-model="form.description"
-          rows="10"
           autosize
+          rows="10"
           type="textarea"
+          v-model="form.description"
           :placeholder="user.description || '请输入介绍'"
         />
       </van-cell>
@@ -67,6 +68,7 @@
 import { defineComponent, computed, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { Toast } from 'vant'
 
 import DfHeader from '../../layouts/DfHeader.vue'
 import DfPersonalCard from '../../components/DfPersonalCard.vue'
@@ -99,6 +101,22 @@ export default defineComponent({
     }
 
     const handleModify = () => {
+      if (/[`~!@#$%^&*()_\-+=<>?:"{}|,8;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘'，。、]/.test(form.name)) {
+        Toast({
+          message: '暂不支持特殊字符'
+        })
+
+        return null
+      }
+
+      if (form.name.length < 4 || form.name.length > 20) {
+        Toast({
+          message: '请输入4-20位的非特殊字符'
+        })
+
+        return null
+      }
+
       if (!form.name) {
         form.name = store.state.user.information.name
       }
